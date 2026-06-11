@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#FAF4E8" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Les Voisins du 13" />
+<title>Les Voisins du 13 · Rue des Carrières, Montmagny</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --cream:#FAF4E8; --cream-deep:#F1E7D3; --card:#FFFFFF;
+    --ink:#2E2A24; --ink-soft:#7A7167;
+    --terracotta:#C15F2E; --terracotta-soft:#F3DDCB; --coral:#E07A4D;
+    --leaf:#2F6B50; --leaf-soft:#DCEBE0;
+    --border:#ECE3D2; --shadow:0 1px 0 rgba(0,0,0,.04);
+    --maxw:430px;
+    --safe-top:env(safe-area-inset-top,0px);
+    --safe-bot:env(safe-area-inset-bottom,0px);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+    background:var(--cream);color:var(--ink);
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+    overscroll-behavior-y:none;
+  }
+  h1,h2,h3,.display{font-family:"Fraunces",Georgia,serif;letter-spacing:-.01em;}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+  img{display:block;max-width:100%;}
+
+  /* App is a centered phone column */
+  .phone{
+    position:relative;max-width:var(--maxw);margin:0 auto;min-height:100dvh;
+    background:var(--cream);
+    background-image:radial-gradient(circle at 1px 1px, rgba(193,95,46,.05) 1px, transparent 0);
+    background-size:22px 22px;
+    box-shadow:0 0 60px rgba(0,0,0,.06);
+    display:flex;flex-direction:column;
+  }
+
+  /* ===== Onboarding ===== */
+  #onboard{
+    position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;padding:32px 28px;
+    background:radial-gradient(120% 80% at 50% 0%, #FBEEDD 0%, var(--cream) 55%);
+    text-align:center;transition:opacity .5s ease, transform .5s ease;
+  }
+  #onboard.hide{opacity:0;transform:scale(1.04);pointer-events:none;}
+  .ob-badge{
+    width:84px;height:84px;border-radius:26px;display:grid;place-items:center;
+    background:linear-gradient(140deg,var(--terracotta),var(--coral));color:#fff;
+    box-shadow:0 14px 30px -8px rgba(193,95,46,.55);margin-bottom:22px;
+    font-family:"Fraunces",serif;font-size:40px;font-weight:600;
+  }
+  #onboard .eyebrow{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--terracotta);}
+  #onboard h1{font-size:30px;line-height:1.1;margin:10px 0 6px;font-weight:600;}
+  #onboard p.sub{color:var(--ink-soft);font-size:15px;max-width:300px;margin:0 0 30px;line-height:1.5;}
+  .ob-field{width:100%;max-width:330px;}
+  .ob-field label{display:block;text-align:left;font-size:12px;font-weight:600;color:var(--ink-soft);margin:0 0 8px 4px;}
+  .ob-field input{
+    width:100%;padding:16px 18px;border-radius:18px;border:1.5px solid var(--border);
+    background:#fff;font-size:17px;color:var(--ink);outline:none;transition:border .2s,box-shadow .2s;
+  }
+  .ob-field input:focus{border-color:var(--terracotta);box-shadow:0 0 0 4px rgba(193,95,46,.12);}
+  .ob-btn{
+    margin-top:16px;width:100%;max-width:330px;padding:16px;border-radius:18px;
+    background:var(--terracotta);color:#fff;font-size:16px;font-weight:600;
+    box-shadow:0 10px 20px -8px rgba(193,95,46,.6);transition:transform .12s, opacity .2s;
+  }
+  .ob-btn:active{transform:scale(.97);}
+  .ob-foot{margin-top:26px;font-size:12px;color:var(--ink-soft);opacity:.8;}
+
+  /* ===== Header ===== */
+  .hdr{
+    position:sticky;top:0;z-index:30;padding:calc(var(--safe-top) + 12px) 18px 12px;
+    background:rgba(250,244,232,.82);backdrop-filter:saturate(180%) blur(18px);
+    -webkit-backdrop-filter:saturate(180%) blur(18px);
+    border-bottom:1px solid rgba(236,227,210,.7);
+  }
+  .hdr-row{display:flex;align-items:center;gap:12px;}
+  .hdr-logo{
+    width:42px;height:42px;border-radius:14px;flex:none;display:grid;place-items:center;
+    background:linear-gradient(140deg,var(--terracotta),var(--coral));color:#fff;
+    font-family:"Fraunces",serif;font-weight:600;font-size:20px;
+    box-shadow:0 6px 14px -6px rgba(193,95,46,.6);
+  }
+  .hdr-titles{flex:1;min-width:0;}
+  .hdr-titles .t{font-family:"Fraunces",serif;font-weight:600;font-size:18px;line-height:1.1;}
+  .hdr-titles .s{font-size:12px;color:var(--ink-soft);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .hdr-bell{
+    width:42px;height:42px;border-radius:50%;flex:none;display:grid;place-items:center;
+    background:#fff;border:1px solid var(--border);color:var(--terracotta);position:relative;
+  }
+  .hdr-bell .dot{position:absolute;top:9px;right:10px;width:8px;height:8px;border-radius:50%;background:var(--coral);border:2px solid #fff;}
+  .greet{margin-top:14px;}
+  .greet .hi{font-family:"Fraunces",serif;font-size:24px;font-weight:600;line-height:1.05;}
+  .greet .hi span{color:var(--terracotta);}
+  .greet .day{font-size:13px;color:var(--ink-soft);margin-top:2px;}
+
+  /* ===== Scroll area ===== */
+  main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 16px calc(96px + var(--safe-bot));}
+  .page{display:none;animation:fade .35s ease;}
+  .page.active{display:block;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+
+  .page-head{margin:4px 2px 16px;}
+  .page-head .eyebrow{font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--terracotta);}
+  .page-head h2{font-size:27px;font-weight:600;margin:4px 0 0;line-height:1.05;}
+  .page-head p{font-size:14px;color:var(--ink-soft);margin:6px 0 0;line-height:1.45;}
+
+  .section-label{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin:22px 4px 10px;}
+
+  /* ===== Cards ===== */
+  .card{background:var(--card);border-radius:22px;box-shadow:var(--shadow);border:1px solid rgba(236,227,210,.6);overflow:hidden;margin-bottom:14px;}
+  .card-pad{padding:16px;}
+  .post-head{display:flex;align-items:center;gap:11px;margin-bottom:11px;}
+  .avatar{width:42px;height:42px;border-radius:50%;flex:none;display:grid;place-items:center;color:#fff;font-weight:600;font-size:16px;font-family:"Fraunces",serif;}
+  .avatar.ring{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--terracotta-soft);}
+  .post-meta{flex:1;min-width:0;}
+  .post-meta .nm{font-weight:600;font-size:14.5px;line-height:1.15;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+  .post-meta .sub{font-size:12px;color:var(--ink-soft);margin-top:1px;}
+  .chip{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:999px;letter-spacing:.02em;}
+  .chip.mairie{background:var(--leaf-soft);color:var(--leaf);}
+  .chip.pin{background:var(--terracotta-soft);color:var(--terracotta);}
+  .pin-flag{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--terracotta);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;}
+
+  .post-title{font-family:"Fraunces",serif;font-size:19px;font-weight:600;line-height:1.18;margin:2px 0 6px;}
+  .post-body{font-size:14.5px;line-height:1.5;color:#433d35;}
+  .post-media{margin:12px -16px 0;}
+  .post-media img{width:100%;height:auto;object-fit:cover;}
+  .media-stack{display:flex;gap:2px;}
+  .media-stack img{width:50%;height:160px;object-fit:cover;}
+  /* video thumbnail (opens lightbox) */
+  .vid-thumb{position:relative;display:block;width:100%;height:200px;margin:12px 0 0;border-radius:18px;overflow:hidden;background-size:cover;background-position:center;text-align:left;}
+  .vid-thumb:active{transform:scale(.99);}
+  .vid-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.15) 0%,rgba(0,0,0,.05) 40%,rgba(0,0,0,.55) 100%);}
+  .vid-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:62px;height:62px;border-radius:50%;background:rgba(255,255,255,.92);color:var(--terracotta);display:grid;place-items:center;box-shadow:0 8px 24px rgba(0,0,0,.35);padding-left:3px;}
+  .vid-label{position:absolute;left:12px;bottom:12px;z-index:2;display:flex;align-items:center;gap:7px;color:#fff;font-size:13px;font-weight:600;text-shadow:0 1px 4px rgba(0,0,0,.5);}
+  .vid-dot{width:8px;height:8px;border-radius:50%;background:#ff4d4d;box-shadow:0 0 0 0 rgba(255,77,77,.6);animation:rec 1.6s infinite;}
+  @keyframes rec{0%{box-shadow:0 0 0 0 rgba(255,77,77,.6);}70%{box-shadow:0 0 0 7px rgba(255,77,77,0);}100%{box-shadow:0 0 0 0 rgba(255,77,77,0);}}
+  /* lightbox */
+  #light{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;padding:16px;flex-direction:column;}
+  #light.show{display:flex;animation:fade .25s ease;}
+  #light .lx-close{position:absolute;top:calc(var(--safe-top) + 14px);right:18px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;font-size:20px;display:grid;place-items:center;z-index:2;}
+  #light .lx-title{position:absolute;top:calc(var(--safe-top) + 20px);left:20px;color:#fff;font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;}
+  #light video,#light img{max-width:100%;max-height:82vh;border-radius:14px;}
+
+  .info-row{display:flex;align-items:center;gap:10px;font-size:13.5px;color:#433d35;margin-top:9px;}
+  .info-row svg{flex:none;color:var(--terracotta);}
+
+  /* reactions */
+  .react-bar{display:flex;align-items:center;gap:8px;margin-top:14px;padding-top:13px;border-top:1px solid var(--border);}
+  .react{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--ink-soft);padding:7px 12px;border-radius:999px;background:var(--cream-deep);transition:transform .12s,background .2s,color .2s;}
+  .react:active{transform:scale(.92);}
+  .react.on{background:var(--terracotta-soft);color:var(--terracotta);}
+  .react.coming.on{background:var(--leaf-soft);color:var(--leaf);}
+  .react .ic{font-size:15px;line-height:1;}
+  .react-spacer{flex:1;}
+  .react-share{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--leaf);}
+
+  .coming-faces{display:flex;align-items:center;margin-top:12px;}
+  .coming-faces .fc{width:26px;height:26px;border-radius:50%;border:2px solid #fff;margin-left:-8px;display:grid;place-items:center;color:#fff;font-size:10px;font-weight:600;}
+  .coming-faces .fc:first-child{margin-left:0;}
+  .coming-faces .lbl{font-size:12px;color:var(--ink-soft);margin-left:10px;}
+
+  /* special cards */
+  .mini{display:flex;align-items:center;gap:12px;padding:14px 16px;}
+  .mini .ic{width:42px;height:42px;border-radius:14px;flex:none;display:grid;place-items:center;font-size:20px;}
+  .mini .tx{flex:1;min-width:0;}
+  .mini .tx .a{font-weight:600;font-size:14px;line-height:1.2;}
+  .mini .tx .b{font-size:12.5px;color:var(--ink-soft);margin-top:2px;line-height:1.35;}
+  .card.tint-leaf{background:linear-gradient(135deg,#EAF3EC,#fff 70%);}
+  .card.tint-coral{background:linear-gradient(135deg,#FBEAE0,#fff 70%);}
+  .card.tint-terra{background:linear-gradient(135deg,#F7E6D8,#fff 70%);}
+
+  .thanks-card{background:linear-gradient(135deg,#F6ECD9,#fff 80%);}
+
+  /* facts grid */
+  .facts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px;}
+  .fact{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid rgba(236,227,210,.6);border-radius:18px;padding:13px;font-size:12.5px;font-weight:500;box-shadow:var(--shadow);}
+  .fact .ic{font-size:20px;}
+
+  /* filter pills */
+  .pills{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 4px;margin:0 -2px 4px;scrollbar-width:none;}
+  .pills::-webkit-scrollbar{display:none;}
+  .pill{flex:none;display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;padding:8px 14px;border-radius:999px;background:var(--cream-deep);color:var(--ink-soft);transition:.2s;}
+  .pill.on{background:var(--terracotta);color:#fff;}
+
+  /* action buttons (bottom of entre-voisins) */
+  .act{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:#fff;border:1px solid rgba(236,227,210,.7);border-radius:18px;padding:13px 14px;margin-bottom:10px;box-shadow:var(--shadow);transition:transform .12s,background .2s;}
+  .act:active{transform:scale(.98);}
+  .act .ic{width:40px;height:40px;border-radius:50%;flex:none;display:grid;place-items:center;color:#fff;font-size:18px;}
+  .act .lbl{flex:1;font-size:14px;font-weight:600;}
+  .act .plus{color:var(--ink-soft);font-size:18px;font-weight:700;}
+
+  /* profile */
+  .prof-card{border-radius:26px;padding:20px;color:#fff;background:linear-gradient(140deg,var(--terracotta),var(--coral));box-shadow:0 16px 30px -14px rgba(193,95,46,.6);margin-bottom:8px;}
+  .prof-top{display:flex;align-items:center;gap:15px;}
+  .prof-top .av{width:62px;height:62px;border-radius:50%;background:rgba(255,255,255,.22);display:grid;place-items:center;font-family:"Fraunces",serif;font-size:26px;font-weight:600;box-shadow:0 0 0 3px rgba(255,255,255,.3);}
+  .prof-top .meta{flex:1;min-width:0;}
+  .prof-top .meta .since{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;opacity:.85;}
+  .prof-top .meta .nm{font-family:"Fraunces",serif;font-size:23px;font-weight:600;line-height:1.1;margin-top:1px;}
+  .prof-top .meta .loc{font-size:13px;opacity:.9;margin-top:1px;}
+  .prof-edit{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.18);display:grid;place-items:center;font-size:16px;flex:none;}
+  .prof-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px;}
+  .prof-stats .st{background:rgba(255,255,255,.16);border-radius:16px;padding:10px 6px;text-align:center;}
+  .prof-stats .st .v{font-family:"Fraunces",serif;font-size:19px;font-weight:600;line-height:1;}
+  .prof-stats .st .l{font-size:10px;opacity:.85;margin-top:3px;}
+
+  .list{background:#fff;border-radius:22px;overflow:hidden;box-shadow:var(--shadow);border:1px solid rgba(236,227,210,.6);}
+  .li{display:flex;align-items:center;gap:12px;padding:13px 15px;border-top:1px solid rgba(236,227,210,.7);}
+  .li:first-child{border-top:none;}
+  .li .ic{width:38px;height:38px;border-radius:50%;flex:none;display:grid;place-items:center;background:var(--cream-deep);color:var(--terracotta);font-size:17px;}
+  .li .tx{flex:1;min-width:0;}
+  .li .tx .a{font-size:14px;font-weight:600;}
+  .li .tx .b{font-size:12px;color:var(--ink-soft);margin-top:1px;}
+  .li .ca{color:var(--ink-soft);font-size:15px;}
+  .li .badge{font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:999px;background:var(--leaf-soft);color:var(--leaf);}
+
+  .mypost{padding:14px 15px;border-top:1px solid rgba(236,227,210,.7);}
+  .mypost:first-child{border-top:none;}
+  .mypost .a{font-weight:600;font-size:14.5px;display:flex;align-items:center;gap:8px;}
+  .mypost .meta{font-size:12px;color:var(--ink-soft);margin-top:4px;display:flex;align-items:center;gap:6px;}
+  .mypost .meta .ok{color:var(--leaf);font-weight:600;}
+  .mypost .pushrow{display:flex;align-items:center;gap:8px;margin-top:11px;}
+  .mypost .pushbtn{font-size:12px;font-weight:600;color:var(--terracotta);background:var(--terracotta-soft);padding:7px 12px;border-radius:999px;transition:transform .12s;}
+  .mypost .pushbtn:active{transform:scale(.95);}
+  .mypost .stat{font-size:11.5px;color:var(--ink-soft);}
+
+  .signout{margin:14px 0 6px;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;background:#fff;border:1px solid var(--border);border-radius:999px;padding:13px;font-size:14px;font-weight:600;color:var(--ink-soft);}
+  .foot{text-align:center;font-size:11px;color:var(--ink-soft);opacity:.85;padding:10px 0 4px;}
+
+  /* ===== Bottom nav ===== */
+  nav{
+    position:fixed;left:0;right:0;bottom:0;z-index:40;max-width:var(--maxw);margin:0 auto;
+    padding:8px 10px calc(8px + var(--safe-bot));
+    background:rgba(250,244,232,.86);backdrop-filter:saturate(180%) blur(20px);
+    -webkit-backdrop-filter:saturate(180%) blur(20px);
+    border-top:1px solid rgba(236,227,210,.7);
+    display:flex;justify-content:space-around;
+  }
+  .nav-btn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:5px 14px;color:var(--ink-soft);transition:color .2s;flex:1;}
+  .nav-btn.on{color:var(--terracotta);}
+  .nav-btn .lab{font-size:10.5px;font-weight:600;}
+  .nav-btn svg{transition:transform .2s;}
+  .nav-btn.on svg{transform:translateY(-1px);}
+
+  /* toast */
+  #toast{position:fixed;left:50%;bottom:calc(96px + var(--safe-bot));transform:translateX(-50%) translateY(20px);z-index:70;
+    background:var(--ink);color:#fff;font-size:13px;font-weight:500;padding:11px 18px;border-radius:999px;
+    box-shadow:0 10px 30px -8px rgba(0,0,0,.4);opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;max-width:88%;text-align:center;}
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  @media(min-width:500px){ .phone{border-left:1px solid var(--border);border-right:1px solid var(--border);} }
+</style>
+</head>
+<body>
+
+<!-- ============ ONBOARDING ============ -->
+<div id="onboard">
+  <div class="ob-badge">13</div>
+  <div class="eyebrow">Rue des Carrières · Montmagny</div>
+  <h1>Les Voisins du 13</h1>
+  <p class="sub">Le fil vivant de notre résidence. Entraide, sorties et infos pratiques, entre voisins.</p>
+  <form class="ob-field" id="obForm" autocomplete="off">
+    <label for="obName">Comment tu t'appelles&nbsp;?</label>
+    <input id="obName" type="text" placeholder="Ton prénom" autocomplete="given-name" />
+    <button class="ob-btn" type="submit">Entrer dans le quartier</button>
+  </form>
+  <div class="ob-foot">Aucune inscription. Juste un coup d'œil chaleureux.</div>
+</div>
+
+<!-- ============ APP ============ -->
+<div class="phone" id="app" style="display:none">
+  <!-- Header -->
+  <header class="hdr">
+    <div class="hdr-row">
+      <div class="hdr-logo">13</div>
+      <div class="hdr-titles">
+        <div class="t">Les Voisins du 13</div>
+        <div class="s">Rue des Carrières · Montmagny</div>
+      </div>
+      <button class="hdr-bell" onclick="toast('3 nouvelles publications cette semaine')" aria-label="Notifications">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="dot"></span>
+      </button>
+    </div>
+    <div class="greet">
+      <div class="hi">Bonjour <span id="greetName">voisin</span> 👋</div>
+      <div class="day" id="greetDay">Ravi de te voir rue des Carrières</div>
+    </div>
+  </header>
+
+  <main id="scroll">
+    <!-- ====== PAGE: FIL ====== -->
+    <section class="page active" id="page-fil"></section>
+
+    <!-- ====== PAGE: RÉSIDENCE ====== -->
+    <section class="page" id="page-residence"></section>
+
+    <!-- ====== PAGE: ENTRE VOISINS ====== -->
+    <section class="page" id="page-voisins"></section>
+
+    <!-- ====== PAGE: PROFIL ====== -->
+    <section class="page" id="page-profil"></section>
+  </main>
+
+  <!-- Bottom nav -->
+  <nav>
+    <button class="nav-btn on" data-tab="fil" onclick="go('fil')">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+      <span class="lab">Fil</span>
+    </button>
+    <button class="nav-btn" data-tab="residence" onclick="go('residence')">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 9h0M9 13h0M9 17h0M15 9h0M15 13h0M15 17h0"/></svg>
+      <span class="lab">Résidence</span>
+    </button>
+    <button class="nav-btn" data-tab="voisins" onclick="go('voisins')">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 1 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      <span class="lab">Entre voisins</span>
+    </button>
+    <button class="nav-btn" data-tab="profil" onclick="go('profil')">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a7 7 0 0 1 14 0v1"/></svg>
+      <span class="lab">Profil</span>
+    </button>
+  </nav>
+</div>
+
+<!-- Lightbox plein écran (vidéo / photo) -->
+<div id="light" onclick="closeLight(event)">
+  <div class="lx-title" id="lxTitle"></div>
+  <button class="lx-close" onclick="closeLight()" aria-label="Fermer">✕</button>
+  <div id="lxBody"></div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ============ DATA ============ */
+const ME_DEFAULT = "voisin";
+const neighbors = {
+  nadir:   {nm:"Nadir",          col:"#0f766e", role:"Mairie de Montmagny", floor:"Bât. A · RDC"},
+  awa:     {nm:"Awa",            col:"#b45309", floor:"Bât. B · 2e"},
+  sacha:   {nm:"Sacha",          col:"#7c2d12", floor:"Bât. C · 3e"},
+  mamadou: {nm:"Mamadou",        col:"#9a3412", floor:"Bât. D · 1er"},
+  diallo:  {nm:"Famille Diallo", col:"#166534", floor:"Bât. A · 3e"},
+  syndic:  {nm:"Le Syndic",      col:"#374151", role:"Résidence", floor:"Bât. A · RDC"},
+  leila:   {nm:"Leila",          col:"#be123c", floor:"Bât. B · 4e"},
+  marc:    {nm:"Marc",           col:"#1d4ed8", floor:"Bât. C · 1er"},
+  fatou:   {nm:"Fatou",          col:"#9d174d", floor:"Bât. D · 2e"},
+};
+
+/* media hosted alongside index.html */
+const MEDIA = {
+  coupe:  "img/coupe-1.jpg",
+  coupe2: "img/coupe-2.jpg",
+  fete:   "img/fete-sport.jpg",
+  video:  "video/nadir-annonce.mp4",
+};
+
+function initials(n){return n.trim().split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase();}
+function av(id,size){const n=neighbors[id];return `<div class="avatar" style="background:${n.col};width:${size||42}px;height:${size||42}px">${initials(n.nm)}</div>`;}
+function comingFaces(ids,meName){
+  const show=ids.slice(0,4);
+  let h='<div class="coming-faces">';
+  show.forEach(id=>{const n=neighbors[id]; h+=`<div class="fc" style="background:${n?n.col:'#C15F2E'}">${initials(n?n.nm:meName)}</div>`;});
+  const extra=ids.length-show.length;
+  h+=`<div class="lbl">${ids.length} voisins y vont${extra>0?` · +${extra}`:""}</div></div>`;
+  return h;
+}
+
+/* ============ FIL ============ */
+function renderFil(){
+  const el=document.getElementById('page-fil');
+  el.innerHTML = `
+  <!-- Nadir pinned event with proof -->
+  <article class="card">
+    <div class="card-pad">
+      <div class="pin-flag">📌 Épinglé par le quartier</div>
+      <div class="post-head">
+        ${av('nadir',44)}
+        <div class="post-meta">
+          <div class="nm">Nadir <span class="chip mairie">✓ Mairie de Montmagny</span></div>
+          <div class="sub">Bât. A · RDC · il y a 2h</div>
+        </div>
+      </div>
+      <div class="post-title">Coupe des Nations de Montmagny</div>
+      <div class="post-body">Compétition internationale de football, un grand rassemblement du quartier. On y va ensemble depuis le 13 ! Venez nombreux, ambiance garantie.</div>
+      <div class="info-row"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Vendredi 13 juin · Montmagny</div>
+      <button class="vid-thumb" onclick="openVideo('${MEDIA.video}','Message de Nadir')" style="background-image:url('${MEDIA.coupe}')">
+        <span class="vid-shade"></span>
+        <span class="vid-play"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
+        <span class="vid-label"><span class="vid-dot"></span>Message de Nadir · vidéo</span>
+      </button>
+      <div class="media-stack">
+        <img src="${MEDIA.coupe}" alt="Affiche Coupe des Nations" onclick="openImage('${MEDIA.coupe}')"/>
+        <img src="${MEDIA.coupe2}" alt="Coupe des Nations" onclick="openImage('${MEDIA.coupe2}')"/>
+      </div>
+      ${comingFaces(['awa','sacha','mamadou','leila','marc'])}
+      ${reactBar('ev-coupe',{like:18,thanks:4,coming:12})}
+    </div>
+  </article>
+
+  <!-- Welcome Diallo -->
+  <article class="card tint-leaf">
+    <div class="mini">
+      <div class="ic" style="background:var(--leaf-soft)">🎉</div>
+      <div class="tx">
+        <div class="a">Bienvenue à la Famille Diallo</div>
+        <div class="b">Vient d'emménager · Bât. A, 3e étage. Souhaitez-leur la bienvenue !</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- Help perceuse -->
+  <article class="card">
+    <div class="card-pad">
+      <div class="post-head">
+        ${av('awa')}
+        <div class="post-meta">
+          <div class="nm">Awa</div>
+          <div class="sub">Bât. B · 2e · il y a 1h</div>
+        </div>
+        <span class="chip" style="background:var(--terracotta-soft);color:var(--terracotta)">🤝 Coup de main</span>
+      </div>
+      <div class="post-body">Coucou les voisins, qui aurait une perceuse à me prêter ce week-end ? Petit montage de meuble 🙏</div>
+      <div class="info-row" style="color:var(--ink-soft)">💬 3 voisins ont répondu</div>
+      ${reactBar('help-perceuse',{like:5,thanks:2,coming:0},true)}
+    </div>
+  </article>
+
+  <!-- Birthday Mamadou -->
+  <article class="card tint-coral">
+    <div class="mini">
+      <div class="ic" style="background:#FBE0D4">🎂</div>
+      <div class="tx">
+        <div class="a">Aujourd'hui, c'est l'anniversaire de Mamadou</div>
+        <div class="b">Un petit mot lui fera plaisir · Bât. D, 1er étage.</div>
+      </div>
+    </div>
+  </article>
+
+  <!-- Outing picnic -->
+  <article class="card">
+    <div class="card-pad">
+      <div class="post-head">
+        ${av('sacha')}
+        <div class="post-meta">
+          <div class="nm">Sacha</div>
+          <div class="sub">Bât. C · 3e · il y a 4h</div>
+        </div>
+        <span class="chip" style="background:var(--leaf-soft);color:var(--leaf)">🧺 Sortie</span>
+      </div>
+      <div class="post-title">Pique-nique au parc</div>
+      <div class="post-body">On pose une couverture au parc, chacun amène un truc à grignoter. Enfants bienvenus !</div>
+      <div class="info-row"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Samedi · 12h30 au parc</div>
+      ${comingFaces(['awa','leila','marc','fatou','mamadou','me'],'Toi')}
+      ${reactBar('out-picnic',{like:9,thanks:1,coming:6})}
+    </div>
+  </article>
+
+  <!-- Thanks -->
+  <article class="card thanks-card">
+    <div class="card-pad">
+      <div class="post-head">
+        ${av('leila')}
+        <div class="post-meta">
+          <div class="nm">Leila <span style="color:var(--ink-soft);font-weight:400">→</span> Marc</div>
+          <div class="sub">hier · Un merci entre voisins</div>
+        </div>
+        <div style="font-size:20px">💛</div>
+      </div>
+      <div class="post-body">Merci à Marc qui a rentré mes courses pendant l'orage hier soir 💛</div>
+    </div>
+  </article>
+
+  <!-- Syndic info -->
+  <article class="card">
+    <div class="card-pad">
+      <div class="post-head">
+        ${av('syndic')}
+        <div class="post-meta">
+          <div class="nm">Le Syndic <span class="chip" style="background:#E9EAEC;color:#374151">Résidence</span></div>
+          <div class="sub">hier</div>
+        </div>
+      </div>
+      <div class="post-body">💧 Coupure d'eau mardi matin, 9h–12h, tous les bâtiments. Pensez à remplir une bouteille la veille.</div>
+    </div>
+  </article>
+
+  <div class="foot">Tu es à jour · Les Voisins du 13</div>
+  `;
+  bindReacts(el);
+}
+
+/* ============ RÉSIDENCE ============ */
+function renderResidence(){
+  const el=document.getElementById('page-residence');
+  const infos=[
+    {role:"Le Syndic",ago:"hier",tx:"Coupure d'eau mardi matin 9h–12h, tous les bâtiments."},
+    {role:"Le Syndic",ago:"il y a 2j",tx:"Sortie des encombrants jeudi soir, à déposer devant le Bât. A."},
+    {role:"Le Syndic",ago:"il y a 3j",tx:"Minuterie de la cage d'escalier du Bât. C réparée — merci pour votre patience (et vos mollets, 4 étages sans ascenseur 😅)."},
+  ];
+  el.innerHTML=`
+  <div class="page-head">
+    <div class="eyebrow">Notre résidence</div>
+    <h2>Rue des Carrières</h2>
+    <p>Montmagny · 95360 — 64 foyers, un seul fil.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><span class="ic">🏢</span><span>4 bâtiments · 64 foyers</span></div>
+    <div class="fact"><span class="ic">🪜</span><span>4 étages · sans ascenseur</span></div>
+    <div class="fact"><span class="ic">👨‍👩‍👧‍👦</span><span>~190 habitants</span></div>
+    <div class="fact"><span class="ic">🗑️</span><span>Encombrants : jeudi soir</span></div>
+  </div>
+  <div class="section-label">Infos pratiques</div>
+  ${infos.map(i=>`
+    <article class="card"><div class="card-pad">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--terracotta)">${i.role} · ${i.ago}</div>
+      <div class="post-body" style="margin-top:5px">${i.tx}</div>
+    </div></article>`).join("")}
+  <div class="foot">Géré par le Syndic · mis à jour régulièrement</div>
+  `;
+}
+
+/* ============ ENTRE VOISINS ============ */
+const EV_TABS=[{id:"tout",l:"Tout",e:"📣"},{id:"coup",l:"Coup de main",e:"🤝"},{id:"sorties",l:"Sorties",e:"🎉"},{id:"cagnottes",l:"Cagnottes",e:"🐷"}];
+let evTab="tout";
+function renderVoisins(){
+  const el=document.getElementById('page-voisins');
+  el.innerHTML=`
+  <div class="page-head">
+    <div class="eyebrow">Chez nous</div>
+    <h2>Entre voisins</h2>
+    <p>Coups de main, sorties, cagnottes : tout ce qu'on fait ensemble.</p>
+  </div>
+  <div class="pills" id="evPills">
+    ${EV_TABS.map(t=>`<button class="pill ${t.id===evTab?'on':''}" onclick="setEvTab('${t.id}')">${t.e} ${t.l}</button>`).join("")}
+  </div>
+  <div id="evContent"></div>
+  `;
+  renderEvContent();
+}
+function setEvTab(id){evTab=id;document.querySelectorAll('#evPills .pill').forEach((p,i)=>p.classList.toggle('on',EV_TABS[i].id===id));renderEvContent();}
+function renderEvContent(){
+  const c=document.getElementById('evContent');
+  const fete=`
+    <article class="card"><div class="card-pad">
+      <div class="post-head">${av('nadir')}<div class="post-meta">
+        <div class="nm">Nadir <span class="chip mairie">✓ Mairie</span></div>
+        <div class="sub">il y a 1j</div></div>
+        <span class="chip" style="background:var(--leaf-soft);color:var(--leaf)">🎉 Sortie</span>
+      </div>
+      <div class="post-title">La Fête du Sport</div>
+      <div class="post-body">Animations et découverte des activités des associations du territoire. Une belle journée à vivre entre voisins.</div>
+      <div class="post-media"><img src="${MEDIA.fete}" alt="La Fête du Sport"/></div>
+      <div class="info-row" style="margin-top:12px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Jeudi 25 juin · 13h00 → 18h30</div>
+      <div class="info-row"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Complexe Charles Grimaud, 24 rue de Villetaneuse</div>
+      ${comingFaces(['awa','sacha','leila','marc','fatou','mamadou','me'],'Toi')}
+      ${reactBar('ev-fete',{like:11,thanks:2,coming:7})}
+    </div></article>`;
+  const picnic=`
+    <article class="card"><div class="card-pad">
+      <div class="post-head">${av('sacha')}<div class="post-meta">
+        <div class="nm">Sacha</div><div class="sub">Bât. C · il y a 4h</div></div>
+        <span class="chip" style="background:var(--leaf-soft);color:var(--leaf)">🧺 Sortie</span></div>
+      <div class="post-title">Pique-nique au parc</div>
+      <div class="post-body">On pose une couverture au parc, chacun amène un truc à grignoter. Enfants bienvenus !</div>
+      <div class="info-row"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Samedi · 12h30 au parc</div>
+      ${reactBar('out-picnic2',{like:9,thanks:1,coming:6})}
+    </div></article>`;
+  const help=`
+    <article class="card"><div class="card-pad">
+      <div class="post-head">${av('awa')}<div class="post-meta">
+        <div class="nm">Awa</div><div class="sub">Bât. B · il y a 1h</div></div>
+        <span class="chip" style="background:var(--terracotta-soft);color:var(--terracotta)">🤝 Coup de main</span></div>
+      <div class="post-body">Qui aurait une perceuse à me prêter ce week-end ? Petit montage de meuble 🙏</div>
+      <div class="info-row" style="color:var(--ink-soft)">💬 3 voisins ont répondu</div>
+      ${reactBar('help-perceuse2',{like:5,thanks:2,coming:0},true)}
+    </div></article>`;
+  const cagnotteEmpty=`
+    <article class="card" style="border:2px dashed var(--border);background:transparent;box-shadow:none">
+      <div style="text-align:center;padding:28px 20px">
+        <div style="font-size:38px">🐷</div>
+        <div class="display" style="font-size:18px;font-weight:600;margin-top:6px">Aucune cagnotte pour l'instant</div>
+        <div style="font-size:13px;color:var(--ink-soft);margin-top:6px;line-height:1.45">Cadeau de départ, fête de quartier, matériel partagé… lancez la première.</div>
+      </div>
+    </article>`;
+
+  let html="";
+  if(evTab==="tout"){html=fete+picnic+help;}
+  else if(evTab==="sorties"){html=fete+picnic;}
+  else if(evTab==="coup"){html=help;}
+  else if(evTab==="cagnottes"){html=cagnotteEmpty;}
+
+  // Actions at the BOTTOM (per request)
+  const actions=`
+    <div class="section-label">Tu veux lancer quelque chose ?</div>
+    <button class="act" onclick="toast('Sur la vraie app, tu pourras publier ici ✨')"><span class="ic" style="background:var(--terracotta)">🤝</span><span class="lbl">Demander un coup de main</span><span class="plus">+</span></button>
+    <button class="act" onclick="toast('Sur la vraie app, tu pourras publier ici ✨')"><span class="ic" style="background:var(--leaf)">🎉</span><span class="lbl">Proposer une sortie</span><span class="plus">+</span></button>
+    <button class="act" onclick="toast('Sur la vraie app, tu pourras publier ici ✨')"><span class="ic" style="background:var(--coral)">🐷</span><span class="lbl">Lancer une cagnotte</span><span class="plus">+</span></button>
+  `;
+  c.innerHTML=html+actions;
+  bindReacts(c);
+}
+
+/* ============ PROFIL ============ */
+function renderProfil(){
+  const el=document.getElementById('page-profil');
+  const name=getName();
+  const isNadir=/nadir/i.test(name);
+  const floor = isNadir ? "Bât. A · RDC · Mairie de Montmagny" : "Bât. A · 2e étage";
+  const since = isNadir ? "Référent quartier" : "Voisin depuis avril 2026";
+
+  const myPosts = isNadir ? `
+    <div class="section-label">Mes publications</div>
+    <div class="list">
+      <div class="mypost">
+        <div class="a">⚽ Coupe des Nations de Montmagny <span class="chip mairie" style="margin-left:auto">Épinglé</span></div>
+        <div class="meta"><span class="ok">✓ Notification envoyée</span> · à 47 voisins · il y a 2h</div>
+        <div class="meta">📷 2 photos · 🎥 1 vidéo · 👍 18 · ✅ 12 viennent</div>
+        <div class="pushrow">
+          <button class="pushbtn" onclick="toast('Rappel renvoyé aux 47 voisins 🔔')">🔔 Renvoyer le rappel</button>
+          <span class="stat">Prochain auto-rappel : 13 juin, 9h</span>
+        </div>
+      </div>
+      <div class="mypost">
+        <div class="a">🏅 La Fête du Sport</div>
+        <div class="meta"><span class="ok">✓ Notification envoyée</span> · à 47 voisins · il y a 1j</div>
+        <div class="meta">📷 1 photo · 👍 11 · ✅ 7 viennent</div>
+        <div class="pushrow">
+          <button class="pushbtn" onclick="toast('Rappel renvoyé aux 47 voisins 🔔')">🔔 Renvoyer le rappel</button>
+          <span class="stat">Prochain auto-rappel : 25 juin, 9h</span>
+        </div>
+      </div>
+    </div>` : "";
+
+  el.innerHTML=`
+  <div class="page-head" style="margin-bottom:14px">
+    <div class="eyebrow">Mon profil</div>
+    <h2>Mon espace voisin</h2>
+  </div>
+  <section class="prof-card">
+    <div class="prof-top">
+      <div class="av">${initials(name)}</div>
+      <div class="meta">
+        <div class="since">${since}</div>
+        <div class="nm">${escapeHtml(name)}</div>
+        <div class="loc">${floor}</div>
+      </div>
+      <button class="prof-edit" onclick="toast('Profil en lecture seule sur la maquette')">✏️</button>
+    </div>
+    <div class="prof-stats">
+      <div class="st"><div class="v">${isNadir?2:24}</div><div class="l">${isNadir?'Publications':'Réactions'}</div></div>
+      <div class="st"><div class="v">${isNadir?47:3}</div><div class="l">${isNadir?'Touchés':'Sorties'}</div></div>
+      <div class="st"><div class="v">${isNadir?19:12}</div><div class="l">${isNadir?'Participants':'Partages'}</div></div>
+    </div>
+  </section>
+
+  ${myPosts}
+
+  <div class="section-label">Mes préférences</div>
+  <div class="list">
+    <div class="li" onclick="toast('Rappels d\\'événements actifs')"><span class="ic">🔔</span><div class="tx"><div class="a">Notifications</div><div class="b">Rappels d'événements actifs</div></div><span class="badge">Activé</span></div>
+    <div class="li" onclick="toast('Connecté pour le partage')"><span class="ic">💬</span><div class="tx"><div class="a">WhatsApp</div><div class="b">Connecté pour le partage</div></div><span class="ca">›</span></div>
+  </div>
+
+  <div class="section-label">Mon compte</div>
+  <div class="list">
+    <div class="li" onclick="toast('Tes données restent dans la résidence')"><span class="ic">🛡️</span><div class="tx"><div class="a">Confidentialité</div></div><span class="ca">›</span></div>
+    <div class="li" onclick="toast('Bientôt')"><span class="ic">⚙️</span><div class="tx"><div class="a">Paramètres</div></div><span class="ca">›</span></div>
+    <div class="li" onclick="toast('On est là pour toi 🙂')"><span class="ic">❓</span><div class="tx"><div class="a">Aide & contact</div></div><span class="ca">›</span></div>
+  </div>
+
+  <button class="signout" onclick="changeName()">↩︎ Changer de prénom</button>
+  <div class="foot">Les Voisins du 13 · v0.1 · fait avec ❤️ rue des Carrières</div>
+  `;
+}
+
+/* ============ REACTIONS ============ */
+const reactState={};
+function reactBar(id,base,helpMode){
+  reactState[id]=reactState[id]||{like:base.like,liked:false,coming:base.coming,joined:false};
+  const s=reactState[id];
+  const comingBtn = helpMode ? "" :
+    `<button class="react coming ${s.joined?'on':''}" data-r="${id}" data-k="coming"><span class="ic">${s.joined?'✅':'🙋'}</span><span class="n">${s.coming}</span> viennent</button>`;
+  return `<div class="react-bar">
+    <button class="react ${s.liked?'on':''}" data-r="${id}" data-k="like"><span class="ic">${s.liked?'❤️':'🤍'}</span><span class="n">${s.like}</span></button>
+    ${comingBtn}
+    <span class="react-spacer"></span>
+    <button class="react-share" onclick="shareToast(event)">↗ Partager</button>
+  </div>`;
+}
+function bindReacts(scope){
+  scope.querySelectorAll('.react[data-r]').forEach(btn=>{
+    btn.onclick=()=>{
+      const id=btn.dataset.r,k=btn.dataset.k,s=reactState[id];
+      if(k==='like'){s.liked=!s.liked;s.like+=s.liked?1:-1;btn.querySelector('.ic').textContent=s.liked?'❤️':'🤍';btn.querySelector('.n').textContent=s.like;btn.classList.toggle('on',s.liked);if(s.liked)pop(btn);}
+      if(k==='coming'){s.joined=!s.joined;s.coming+=s.joined?1:-1;btn.querySelector('.ic').textContent=s.joined?'✅':'🙋';btn.querySelector('.n').textContent=s.coming;btn.classList.toggle('on',s.joined);if(s.joined){toast('Tu es noté comme participant 🎉');pop(btn);}}
+    };
+  });
+}
+function pop(el){el.animate([{transform:'scale(1)'},{transform:'scale(1.25)'},{transform:'scale(1)'}],{duration:280,easing:'ease-out'});}
+function shareToast(e){e.stopPropagation();toast('Lien copié — prêt à partager sur WhatsApp 💬');}
+
+/* ============ NAV / STATE ============ */
+function go(tab){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+tab).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
+  document.getElementById('scroll').scrollTo({top:0,behavior:'instant'});
+  if(navigator.vibrate)navigator.vibrate(4);
+}
+function getName(){return localStorage.getItem('voisin_name')||ME_DEFAULT;}
+function escapeHtml(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function applyName(){
+  const n=getName();
+  document.getElementById('greetName').textContent=n===ME_DEFAULT?'voisin':escapeHtml(n);
+  const days=["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"];
+  document.getElementById('greetDay').textContent="Nous sommes "+days[new Date().getDay()]+", belle journée rue des Carrières";
+}
+function startApp(){
+  document.getElementById('onboard').classList.add('hide');
+  setTimeout(()=>{document.getElementById('onboard').style.display='none';},500);
+  document.getElementById('app').style.display='flex';
+  applyName();
+  renderFil();renderResidence();renderVoisins();renderProfil();
+}
+function changeName(){
+  localStorage.removeItem('voisin_name');
+  document.getElementById('onboard').style.display='flex';
+  document.getElementById('onboard').classList.remove('hide');
+  document.getElementById('app').style.display='none';
+  document.getElementById('obName').value='';
+  document.getElementById('obName').focus();
+}
+
+/* ============ LIGHTBOX ============ */
+function openVideo(src,title){
+  const l=document.getElementById('light');
+  document.getElementById('lxTitle').innerHTML='<span class="vid-dot"></span>'+title;
+  document.getElementById('lxBody').innerHTML='<video src="'+src+'" controls autoplay playsinline></video>';
+  l.classList.add('show');
+  if(navigator.vibrate)navigator.vibrate(6);
+}
+function openImage(src){
+  const l=document.getElementById('light');
+  document.getElementById('lxTitle').textContent='';
+  document.getElementById('lxBody').innerHTML='<img src="'+src+'" alt=""/>';
+  l.classList.add('show');
+}
+function closeLight(e){
+  if(e && e.target.closest('#lxBody')) return; // ne ferme pas si on clique la vidéo
+  const l=document.getElementById('light');
+  l.classList.remove('show');
+  document.getElementById('lxBody').innerHTML=''; // stoppe la lecture
+}
+
+/* ============ TOAST ============ */
+let toastT;
+function toast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+/* ============ BOOT ============ */
+document.getElementById('obForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const v=document.getElementById('obName').value.trim();
+  if(!v){document.getElementById('obName').focus();return;}
+  localStorage.setItem('voisin_name',v);
+  startApp();
+});
+window.addEventListener('load',()=>{
+  if(getName()!==ME_DEFAULT){startApp();}
+  else{setTimeout(()=>document.getElementById('obName').focus(),300);}
+});
+</script>
+</body>
+</html>
