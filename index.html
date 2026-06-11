@@ -266,6 +266,55 @@
     box-shadow:0 10px 30px -8px rgba(0,0,0,.4);opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;max-width:88%;text-align:center;}
   #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
+  /* ===== Hub Entre voisins ===== */
+  .hub{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px;}
+  .hub-card{position:relative;border-radius:20px;padding:15px;text-align:left;overflow:hidden;min-height:118px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:var(--shadow);color:#fff;transition:transform .12s;}
+  .hub-card:active{transform:scale(.97);}
+  .hub-card .hic{font-size:26px;}
+  .hub-card .ht{font-family:"Fraunces",serif;font-weight:600;font-size:16px;}
+  .hub-card .hs{font-size:11px;opacity:.92;margin-top:2px;line-height:1.3;}
+  .ev-back{display:inline-flex;align-items:center;gap:5px;font-size:13.5px;font-weight:600;color:var(--terracotta);margin:0 0 10px;padding:4px 2px;}
+  .bldg-label{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--ink-soft);margin:18px 4px 8px;}
+  .bldg-label .pin{width:22px;height:22px;border-radius:7px;background:var(--terracotta);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:700;}
+  .agenda-item{display:flex;gap:13px;}
+  .agenda-date{flex:none;width:50px;text-align:center;padding-top:2px;}
+  .agenda-date .d{font-family:"Fraunces",serif;font-size:22px;font-weight:600;line-height:1;color:var(--terracotta);}
+  .agenda-date .m{font-size:10px;font-weight:700;text-transform:uppercase;color:var(--ink-soft);margin-top:3px;}
+  .agenda-body{flex:1;min-width:0;}
+  .atag{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:999px;margin-bottom:5px;}
+  .atag.donne{background:var(--leaf-soft);color:var(--leaf);}
+  .atag.prete{background:var(--terracotta-soft);color:var(--terracotta);}
+  .atag.vends{background:#E3ECF7;color:#1d4ed8;}
+  .atag.cherche{background:#FBE0D4;color:#9a3412;}
+  /* ===== Aperçus du Fil ===== */
+  .teasers{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 2px 6px;margin:0 -2px;scrollbar-width:none;}
+  .teasers::-webkit-scrollbar{display:none;}
+  .teaser{flex:0 0 66%;border-radius:18px;padding:14px;color:#fff;text-align:left;box-shadow:var(--shadow);scroll-snap-align:start;transition:transform .12s;}
+  .teaser:active{transform:scale(.98);}
+  .teaser .tic{font-size:22px;}
+  .teaser .tt{font-family:"Fraunces",serif;font-weight:600;font-size:15px;margin-top:6px;}
+  .teaser .txt{font-size:11.5px;opacity:.92;margin-top:4px;line-height:1.35;}
+  .teaser .tgo{font-size:11.5px;font-weight:600;margin-top:8px;opacity:.95;}
+  /* ===== Messages ===== */
+  .msg{display:flex;align-items:center;gap:12px;padding:12px 14px;border-top:1px solid rgba(236,227,210,.7);}
+  .msg:first-child{border-top:none;}
+  .msg .tx{flex:1;min-width:0;}
+  .msg .tx .a{font-size:14.5px;font-weight:600;display:flex;align-items:center;gap:7px;}
+  .msg .tx .b{font-size:12.5px;color:var(--ink-soft);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .msg .mt{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex:none;}
+  .msg .time{font-size:11px;color:var(--ink-soft);}
+  .msg .unread{min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--terracotta);color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center;}
+  .thread{display:flex;flex-direction:column;gap:8px;padding:4px 2px 14px;}
+  .bubble{max-width:80%;padding:9px 13px;border-radius:16px;font-size:14px;line-height:1.4;}
+  .bubble.them{align-self:flex-start;background:#fff;border:1px solid var(--border);border-bottom-left-radius:5px;}
+  .bubble.me{align-self:flex-end;background:var(--terracotta);color:#fff;border-bottom-right-radius:5px;}
+  .bubble .who{font-size:11px;font-weight:700;color:var(--terracotta);margin-bottom:2px;}
+  .bubble.me .who{color:#fff;}
+  .bubble .t{font-size:10px;opacity:.6;margin-top:3px;text-align:right;}
+  .composer{display:flex;align-items:center;gap:8px;padding:8px 2px 2px;}
+  .composer .ci{flex:1;background:#fff;border:1px solid var(--border);border-radius:999px;padding:11px 16px;font-size:14px;color:var(--ink-soft);}
+  .composer .cs{width:40px;height:40px;border-radius:50%;background:var(--terracotta);color:#fff;display:grid;place-items:center;flex:none;font-size:16px;}
+
   @media(min-width:500px){ .phone{border-left:1px solid var(--border);border-right:1px solid var(--border);} }
 </style>
 </head>
@@ -310,11 +359,11 @@
     <!-- ====== PAGE: FIL ====== -->
     <section class="page active" id="page-fil"></section>
 
-    <!-- ====== PAGE: RÉSIDENCE ====== -->
-    <section class="page" id="page-residence"></section>
-
     <!-- ====== PAGE: ENTRE VOISINS ====== -->
     <section class="page" id="page-voisins"></section>
+
+    <!-- ====== PAGE: MESSAGES ====== -->
+    <section class="page" id="page-messages"></section>
 
     <!-- ====== PAGE: PROFIL ====== -->
     <section class="page" id="page-profil"></section>
@@ -326,13 +375,13 @@
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
       <span class="lab">Fil</span>
     </button>
-    <button class="nav-btn" data-tab="residence" onclick="go('residence')">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 9h0M9 13h0M9 17h0M15 9h0M15 13h0M15 17h0"/></svg>
-      <span class="lab">Résidence</span>
-    </button>
-    <button class="nav-btn" data-tab="voisins" onclick="go('voisins')">
+    <button class="nav-btn" data-tab="voisins" onclick="goEv('hub')">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 1 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>
       <span class="lab">Entre voisins</span>
+    </button>
+    <button class="nav-btn" data-tab="messages" onclick="goMsg('list')">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 0 1-.9-3.8A8.38 8.38 0 0 1 12.5 3a8.38 8.38 0 0 1 8.5 8.5z"/></svg>
+      <span class="lab">Messages</span>
     </button>
     <button class="nav-btn" data-tab="profil" onclick="go('profil')">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a7 7 0 0 1 14 0v1"/></svg>
@@ -428,6 +477,15 @@ function renderFil(){
     </div>
   </article>
 
+  <!-- Aperçus du quartier -->
+  <div class="section-label" style="margin-top:6px">Le quartier en un coup d'œil</div>
+  <div class="teasers">
+    <button class="teaser" style="background:linear-gradient(140deg,#C15F2E,#E07A4D)" onclick="goEv('annuaire')"><div class="tic">📇</div><div class="tt">Annuaire</div><div class="txt">Awa, Sacha, Leila… 9 voisins, 4 bâtiments.</div><div class="tgo">Voir l'annuaire ›</div></button>
+    <button class="teaser" style="background:linear-gradient(140deg,#2F6B50,#4a9a72)" onclick="goEv('agenda')"><div class="tic">📅</div><div class="tt">Agenda</div><div class="txt">Coupe des Nations, pique-nique, Fête du Sport.</div><div class="tgo">Voir l'agenda ›</div></button>
+    <button class="teaser" style="background:linear-gradient(140deg,#9a3412,#c2622e)" onclick="goEv('annonces')"><div class="tic">🏷️</div><div class="tt">Petites annonces</div><div class="txt">Perceuse à prêter, canapé à donner…</div><div class="tgo">Voir les annonces ›</div></button>
+    <button class="teaser" style="background:linear-gradient(140deg,#5b5550,#8a7f74)" onclick="goEv('autres')"><div class="tic">✨</div><div class="tt">Autres</div><div class="txt">Coups de main, cagnottes, numéros utiles.</div><div class="tgo">Découvrir ›</div></button>
+  </div>
+
   <!-- Welcome Diallo -->
   <article class="card tint-leaf">
     <div class="mini">
@@ -520,115 +578,167 @@ function renderFil(){
   bindReacts(el);
 }
 
-/* ============ RÉSIDENCE ============ */
-function renderResidence(){
-  const el=document.getElementById('page-residence');
+/* ============ RÉSIDENCE (section dans le Profil) ============ */
+function residenceSection(){
   const infos=[
-    {role:"Le Syndic",ago:"hier",tx:"Coupure d'eau mardi matin 9h–12h, tous les bâtiments."},
+    {role:"Le Syndic",ago:"hier",tx:"Coupure d'eau mardi matin 9h-12h, tous les bâtiments."},
     {role:"Le Syndic",ago:"il y a 2j",tx:"Sortie des encombrants jeudi soir, à déposer devant le Bât. A."},
-    {role:"Le Syndic",ago:"il y a 3j",tx:"Minuterie de la cage d'escalier du Bât. C réparée — merci pour votre patience (et vos mollets, 4 étages sans ascenseur 😅)."},
+    {role:"Le Syndic",ago:"il y a 3j",tx:"Minuterie de la cage d'escalier du Bât. C réparée. Merci pour votre patience (et vos mollets, 4 étages sans ascenseur 😅)."},
   ];
-  el.innerHTML=`
-  <div class="page-head">
-    <div class="eyebrow">Notre résidence</div>
-    <h2>Rue des Carrières</h2>
-    <p>Montmagny · 95360 — 64 foyers, un seul fil.</p>
-  </div>
+  return `
+  <div class="section-label">Notre résidence</div>
   <div class="facts">
     <div class="fact"><span class="ic">🏢</span><span>4 bâtiments · 64 foyers</span></div>
     <div class="fact"><span class="ic">🪜</span><span>4 étages · sans ascenseur</span></div>
     <div class="fact"><span class="ic">👨‍👩‍👧‍👦</span><span>~190 habitants</span></div>
     <div class="fact"><span class="ic">🗑️</span><span>Encombrants : jeudi soir</span></div>
   </div>
-  <div class="section-label">Infos pratiques</div>
-  ${infos.map(i=>`
-    <article class="card"><div class="card-pad">
-      <div style="font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--terracotta)">${i.role} · ${i.ago}</div>
-      <div class="post-body" style="margin-top:5px">${i.tx}</div>
-    </div></article>`).join("")}
-  <div class="foot">Géré par le Syndic · mis à jour régulièrement</div>
-  `;
+  <p style="font-size:12px;color:var(--ink-soft);margin:0 4px 10px">Rue des Carrières, Montmagny · 95360</p>
+  <div class="list">
+    ${infos.map(i=>`<div class="li"><span class="ic">📌</span><div class="tx"><div class="a" style="font-weight:500;font-size:13.5px;line-height:1.35">${i.tx}</div><div class="b">${i.role} · ${i.ago}</div></div></div>`).join("")}
+  </div>`;
 }
 
-/* ============ ENTRE VOISINS ============ */
-const EV_TABS=[{id:"tout",l:"Tout",e:"📣"},{id:"coup",l:"Coup de main",e:"🤝"},{id:"sorties",l:"Sorties",e:"🎉"},{id:"cagnottes",l:"Cagnottes",e:"🐷"}];
-let evTab="tout";
+/* ============ ENTRE VOISINS (hub + sections) ============ */
+const AGENDA=[
+  {d:"13",m:"Juin",e:"⚽",t:"Coupe des Nations de Montmagny",s:"Vendredi · Montmagny",by:"Mairie de Montmagny"},
+  {d:"14",m:"Juin",e:"🧺",t:"Pique-nique au parc",s:"Samedi · 12h30 au parc",by:"Sacha"},
+  {d:"25",m:"Juin",e:"🏅",t:"La Fête du Sport",s:"Jeudi · 13h00 → 18h30 · Complexe Charles Grimaud",by:"Mairie de Montmagny"},
+];
+const ANNONCES=[
+  {tag:"prete",label:"Prête",who:"awa",e:"🔧",t:"Une perceuse",d:"Pour le week-end, montage de meuble. À récupérer au Bât. B.",likes:3},
+  {tag:"donne",label:"Donne",who:"leila",e:"🛋️",t:"Canapé 2 places",d:"Bon état, gris clair. À venir chercher, idéal petit budget.",likes:7},
+  {tag:"vends",label:"Vends",who:"marc",e:"🚲",t:"Vélo enfant · 20€",d:"Roues 16 pouces, peu servi. Parfait pour 4 à 6 ans.",likes:2},
+  {tag:"cherche",label:"Cherche",who:"fatou",e:"🌀",t:"Machine à laver",d:"D'occasion, en état de marche. Bât. D, merci les voisins 🙏",likes:4},
+];
+let evSection="hub";
+function goEv(section){evSection=section;go("voisins");renderVoisins();}
 function renderVoisins(){
   const el=document.getElementById('page-voisins');
-  el.innerHTML=`
+  if(evSection==="hub")el.innerHTML=evHub();
+  else if(evSection==="annuaire")el.innerHTML=evAnnuaire();
+  else if(evSection==="agenda")el.innerHTML=evAgenda();
+  else if(evSection==="annonces"){el.innerHTML=evAnnonces();bindReacts(el);}
+  else if(evSection==="autres")el.innerHTML=evAutres();
+}
+function evHub(){
+  return `
   <div class="page-head">
     <div class="eyebrow">Chez nous</div>
     <h2>Entre voisins</h2>
-    <p>Coups de main, sorties, cagnottes : tout ce qu'on fait ensemble.</p>
+    <p>Qui est là, ce qui arrive, ce qui s'échange. Tape une carte.</p>
   </div>
-  <div class="pills" id="evPills">
-    ${EV_TABS.map(t=>`<button class="pill ${t.id===evTab?'on':''}" onclick="setEvTab('${t.id}')">${t.e} ${t.l}</button>`).join("")}
-  </div>
-  <div id="evContent"></div>
-  `;
-  renderEvContent();
+  <div class="hub">
+    <button class="hub-card c1" onclick="goEv('annuaire')" style="background:linear-gradient(140deg,#C15F2E,#E07A4D)"><span class="hic">📇</span><div><div class="ht">Annuaire</div><div class="hs">9 voisins · 4 bâtiments</div></div></button>
+    <button class="hub-card c2" onclick="goEv('agenda')" style="background:linear-gradient(140deg,#2F6B50,#4a9a72)"><span class="hic">📅</span><div><div class="ht">Agenda</div><div class="hs">3 rendez-vous à venir</div></div></button>
+    <button class="hub-card c3" onclick="goEv('annonces')" style="background:linear-gradient(140deg,#9a3412,#c2622e)"><span class="hic">🏷️</span><div><div class="ht">Petites annonces</div><div class="hs">4 annonces actives</div></div></button>
+    <button class="hub-card c4" onclick="goEv('autres')" style="background:linear-gradient(140deg,#5b5550,#8a7f74)"><span class="hic">✨</span><div><div class="ht">Autres</div><div class="hs">Coups de main, utiles…</div></div></button>
+  </div>`;
 }
-function setEvTab(id){evTab=id;document.querySelectorAll('#evPills .pill').forEach((p,i)=>p.classList.toggle('on',EV_TABS[i].id===id));renderEvContent();}
-function renderEvContent(){
-  const c=document.getElementById('evContent');
-  const fete=`
-    <article class="card"><div class="card-pad">
-      <div class="post-head">${av('nadir')}<div class="post-meta">
-        <div class="nm">Nadir <span class="chip mairie">✓ Mairie</span></div>
-        <div class="sub">il y a 1j</div></div>
-        <span class="chip" style="background:var(--leaf-soft);color:var(--leaf)">🎉 Sortie</span>
-      </div>
-      <div class="post-title">La Fête du Sport</div>
-      <div class="post-body">Animations et découverte des activités des associations du territoire. Une belle journée à vivre entre voisins.</div>
-      <div class="post-media"><img src="${MEDIA.fete}" alt="La Fête du Sport"/></div>
-      <div class="info-row" style="margin-top:12px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Jeudi 25 juin · 13h00 → 18h30</div>
-      <div class="info-row"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Complexe Charles Grimaud, 24 rue de Villetaneuse</div>
-      ${comingFaces(['awa','sacha','leila','marc','fatou','mamadou','me'],'Toi')}
-      ${reactBar('ev-fete',{like:11,thanks:2,coming:7})}
+function evAnnuaire(){
+  const order=["A","B","C","D"];
+  let html=`<button class="ev-back" onclick="goEv('hub')">‹ Entre voisins</button>
+  <div class="page-head" style="margin-bottom:6px"><div class="eyebrow">Le quartier</div><h2>Annuaire</h2><p>Mets un visage sur un prénom. On affiche le bâtiment, jamais l'étage.</p></div>`;
+  order.forEach(b=>{
+    const people=Object.values(neighbors).filter(n=>n.floor==="Bât. "+b);
+    if(!people.length)return;
+    html+=`<div class="bldg-label"><span class="pin">${b}</span> Bâtiment ${b} · ${people.length}</div><div class="list">`;
+    people.forEach(n=>{
+      const role=n.role?`<span class="badge">${n.role}</span>`:'';
+      html+=`<div class="li"><div class="avatar" style="background:${n.col};width:38px;height:38px">${initials(n.nm)}</div><div class="tx"><div class="a">${escapeHtml(n.nm)}</div><div class="b">Bât. ${b}</div></div>${role}</div>`;
+    });
+    html+=`</div>`;
+  });
+  return html;
+}
+function evAgenda(){
+  let html=`<button class="ev-back" onclick="goEv('hub')">‹ Entre voisins</button>
+  <div class="page-head" style="margin-bottom:6px"><div class="eyebrow">Le quartier</div><h2>Agenda</h2><p>Les rendez-vous à ne pas manquer, dans l'ordre.</p></div>`;
+  AGENDA.forEach(a=>{
+    html+=`<article class="card"><div class="card-pad"><div class="agenda-item">
+      <div class="agenda-date"><div class="d">${a.d}</div><div class="m">${a.m}</div></div>
+      <div class="agenda-body">
+        <div class="post-title" style="font-size:16px;margin:0 0 3px">${a.e} ${a.t}</div>
+        <div class="post-body" style="font-size:13px">${a.s}</div>
+        <div class="info-row" style="margin-top:7px;color:var(--ink-soft);font-size:12px">Proposé par ${a.by}</div>
+      </div></div></div></article>`;
+  });
+  return html;
+}
+function evAnnonces(){
+  let html=`<button class="ev-back" onclick="goEv('hub')">‹ Entre voisins</button>
+  <div class="page-head" style="margin-bottom:6px"><div class="eyebrow">Le quartier</div><h2>Petites annonces</h2><p>Donner, prêter, vendre, chercher : entre voisins, tout circule.</p></div>`;
+  ANNONCES.forEach((a,i)=>{
+    const n=neighbors[a.who];
+    html+=`<article class="card"><div class="card-pad">
+      <div class="post-head">${av(a.who)}<div class="post-meta"><div class="nm">${n.nm}</div><div class="sub">${n.floor} · il y a ${i+1}j</div></div><span style="font-size:22px">${a.e}</span></div>
+      <span class="atag ${a.tag}">${a.label}</span>
+      <div class="post-title" style="font-size:16px;margin:2px 0 4px">${a.t}</div>
+      <div class="post-body" style="font-size:14px">${a.d}</div>
+      ${reactBar('annonce-'+i,{like:a.likes,thanks:0,coming:0},true)}
     </div></article>`;
-  const picnic=`
-    <article class="card"><div class="card-pad">
-      <div class="post-head">${av('sacha')}<div class="post-meta">
-        <div class="nm">Sacha</div><div class="sub">Bât. C · il y a 4h</div></div>
-        <span class="chip" style="background:var(--leaf-soft);color:var(--leaf)">🧺 Sortie</span></div>
-      <div class="post-title">Pique-nique au parc</div>
-      <div class="post-body">On pose une couverture au parc, chacun amène un truc à grignoter. Enfants bienvenus !</div>
-      <div class="info-row"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Samedi · 12h30 au parc</div>
-      ${reactBar('out-picnic2',{like:9,thanks:1,coming:6})}
-    </div></article>`;
-  const help=`
-    <article class="card"><div class="card-pad">
-      <div class="post-head">${av('awa')}<div class="post-meta">
-        <div class="nm">Awa</div><div class="sub">Bât. B · il y a 1h</div></div>
-        <span class="chip" style="background:var(--terracotta-soft);color:var(--terracotta)">🤝 Coup de main</span></div>
-      <div class="post-body">Qui aurait une perceuse à me prêter ce week-end ? Petit montage de meuble 🙏</div>
-      <div class="info-row" style="color:var(--ink-soft)">💬 3 voisins ont répondu</div>
-      ${reactBar('help-perceuse2',{like:5,thanks:2,coming:0},true)}
-    </div></article>`;
-  const cagnotteEmpty=`
-    <article class="card" style="border:2px dashed var(--border);background:transparent;box-shadow:none">
-      <div style="text-align:center;padding:28px 20px">
-        <div style="font-size:38px">🐷</div>
-        <div class="display" style="font-size:18px;font-weight:600;margin-top:6px">Aucune cagnotte pour l'instant</div>
-        <div style="font-size:13px;color:var(--ink-soft);margin-top:6px;line-height:1.45">Cadeau de départ, fête de quartier, matériel partagé… lancez la première.</div>
-      </div>
-    </article>`;
+  });
+  return html;
+}
+function evAutres(){
+  return `<button class="ev-back" onclick="goEv('hub')">‹ Entre voisins</button>
+  <div class="page-head" style="margin-bottom:6px"><div class="eyebrow">Le quartier</div><h2>Autres</h2><p>Les coups de main et les infos utiles, au même endroit.</p></div>
+  <div class="section-label">Lancer quelque chose</div>
+  <div class="list">
+    <div class="li" onclick="toast('Sur la vraie app, tu pourras publier ici ✨')"><span class="ic">🤝</span><div class="tx"><div class="a">Demander un coup de main</div></div><span class="ca">›</span></div>
+    <div class="li" onclick="toast('Sur la vraie app, tu pourras publier ici ✨')"><span class="ic">🎉</span><div class="tx"><div class="a">Proposer une sortie</div></div><span class="ca">›</span></div>
+    <div class="li" onclick="toast('Sur la vraie app, tu pourras publier ici ✨')"><span class="ic">🐷</span><div class="tx"><div class="a">Lancer une cagnotte</div></div><span class="ca">›</span></div>
+  </div>
+  <div class="section-label">Pratique</div>
+  <div class="list">
+    <div class="li" onclick="toast('Syndic, gardien, urgences : bientôt ici 📞')"><span class="ic">📞</span><div class="tx"><div class="a">Numéros utiles</div><div class="b">Syndic, gardien, urgences</div></div><span class="ca">›</span></div>
+    <div class="li" onclick="toast('Signaler une panne au syndic, sur la vraie app')"><span class="ic">🛠️</span><div class="tx"><div class="a">Signaler un problème</div><div class="b">Ascenseur, éclairage, propreté…</div></div><span class="ca">›</span></div>
+    <div class="li" onclick="toast('Le règlement et les bons usages de la résidence')"><span class="ic">📋</span><div class="tx"><div class="a">Règlement & bons usages</div></div><span class="ca">›</span></div>
+  </div>`;
+}
 
-  let html="";
-  if(evTab==="tout"){html=fete+picnic+help;}
-  else if(evTab==="sorties"){html=fete+picnic;}
-  else if(evTab==="coup"){html=help;}
-  else if(evTab==="cagnottes"){html=cagnotteEmpty;}
-
-  // Actions at the BOTTOM (per request)
-  const actions=`
-    <div class="section-label">Tu veux lancer quelque chose ?</div>
-    <button class="act" onclick="toast('Sur la vraie app, tu pourras publier ici ✨')"><span class="ic" style="background:var(--terracotta)">🤝</span><span class="lbl">Demander un coup de main</span><span class="plus">+</span></button>
-    <button class="act" onclick="toast('Sur la vraie app, tu pourras publier ici ✨')"><span class="ic" style="background:var(--leaf)">🎉</span><span class="lbl">Proposer une sortie</span><span class="plus">+</span></button>
-    <button class="act" onclick="toast('Sur la vraie app, tu pourras publier ici ✨')"><span class="ic" style="background:var(--coral)">🐷</span><span class="lbl">Lancer une cagnotte</span><span class="plus">+</span></button>
-  `;
-  c.innerHTML=html+actions;
-  bindReacts(c);
+/* ============ MESSAGES ============ */
+const CONVS=[
+  {id:"grpB",name:"Voisins du Bât. B",group:true,col:"#b45309",last:"Awa : Quelqu'un a une perceuse ? 🙏",time:"14:20",unread:2,
+   thread:[{who:"Awa",me:false,t:"Coucou ! Qui aurait une perceuse à prêter ce week-end ?",time:"14:02"},{who:"Leila",me:false,t:"Moi j'en ai une, passe quand tu veux 😊",time:"14:15"},{who:"Awa",me:false,t:"Trop bien, merci 🙏",time:"14:20"}]},
+  {id:"foot",name:"Groupe Foot du 13",group:true,col:"#2F6B50",last:"Nadir : RDV vendredi pour la Coupe ⚽",time:"12:40",unread:0,
+   thread:[{who:"Nadir",me:false,t:"On se retrouve tous vendredi pour la Coupe des Nations ?",time:"12:30"},{who:"Marc",me:false,t:"Présent 💪",time:"12:38"},{who:"Nadir",me:false,t:"RDV 13h devant le Bât. A, on y va ensemble",time:"12:40"}]},
+  {id:"sacha",name:"Sacha",group:false,col:"#7c2d12",last:"Tu ramènes quoi au pique-nique ?",time:"hier",unread:0,
+   thread:[{who:"Sacha",me:false,t:"Salut ! Tu viens au pique-nique samedi ?",time:"hier"},{who:null,me:true,t:"Oui avec plaisir 🙂",time:"hier"},{who:"Sacha",me:false,t:"Top ! Tu ramènes quoi ?",time:"hier"}]},
+  {id:"syndic",name:"Le Syndic",group:false,col:"#374151",last:"Coupure d'eau mardi 9h-12h",time:"lun.",unread:0,
+   thread:[{who:"Le Syndic",me:false,t:"Information : coupure d'eau mardi matin de 9h à 12h, tous les bâtiments.",time:"lundi"}]},
+];
+let msgView="list";
+function goMsg(id){msgView=id;go("messages");renderMessages();}
+function renderMessages(){
+  const el=document.getElementById('page-messages');
+  if(msgView==="list"){
+    let html=`<div class="page-head"><div class="eyebrow">Rester en lien</div><h2>Messages</h2><p>Tes discussions de voisinage, privées et en petits groupes.</p></div><div class="list">`;
+    CONVS.forEach(c=>{
+      const badge=c.group?' <span class="badge" style="background:var(--cream-deep);color:var(--ink-soft)">groupe</span>':'';
+      html+=`<div class="msg" onclick="goMsg('${c.id}')">
+        <div class="avatar" style="background:${c.col};width:46px;height:46px">${c.group?'👥':initials(c.name)}</div>
+        <div class="tx"><div class="a">${c.name}${badge}</div><div class="b">${c.last}</div></div>
+        <div class="mt"><span class="time">${c.time}</span>${c.unread?`<span class="unread">${c.unread}</span>`:''}</div>
+      </div>`;
+    });
+    html+=`</div><div class="foot">Lecture seule sur la maquette</div>`;
+    el.innerHTML=html;
+  }else{
+    const c=CONVS.find(x=>x.id===msgView);
+    let html=`<button class="ev-back" onclick="goMsg('list')">‹ Messages</button>
+    <div style="display:flex;align-items:center;gap:11px;margin:0 2px 14px">
+      <div class="avatar" style="background:${c.col};width:42px;height:42px">${c.group?'👥':initials(c.name)}</div>
+      <div><div style="font-weight:600;font-size:15.5px">${c.name}</div><div style="font-size:12px;color:var(--ink-soft)">${c.group?'Groupe du quartier':'Voisin de la résidence'}</div></div>
+    </div>
+    <div class="thread">`;
+    c.thread.forEach(m=>{
+      const who=(!m.me&&c.group&&m.who)?`<div class="who">${m.who}</div>`:'';
+      html+=`<div class="bubble ${m.me?'me':'them'}">${who}${m.t}<div class="t">${m.time}</div></div>`;
+    });
+    html+=`</div><div class="composer" onclick="toast('Lecture seule sur la maquette 🙂')"><div class="ci">Écris un message…</div><div class="cs">➤</div></div>`;
+    el.innerHTML=html;
+  }
 }
 
 /* ============ PROFIL ============ */
@@ -685,6 +795,8 @@ function renderProfil(){
   </section>
 
   ${myPosts}
+
+  ${residenceSection()}
 
   <div class="section-label">Mes préférences</div>
   <div class="list">
@@ -751,7 +863,7 @@ function startApp(){
   setTimeout(()=>{document.getElementById('onboard').style.display='none';},500);
   document.getElementById('app').style.display='flex';
   applyName();
-  renderFil();renderResidence();renderVoisins();renderProfil();
+  renderFil();renderVoisins();renderMessages();renderProfil();
 }
 function changeName(){
   localStorage.removeItem('voisin_name');
