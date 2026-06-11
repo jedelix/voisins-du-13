@@ -354,15 +354,15 @@
 /* ============ DATA ============ */
 const ME_DEFAULT = "voisin";
 const neighbors = {
-  nadir:   {nm:"Nadir",          col:"#0f766e", role:"Mairie de Montmagny", floor:"Bât. A · RDC"},
-  awa:     {nm:"Awa",            col:"#b45309", floor:"Bât. B · 2e"},
-  sacha:   {nm:"Sacha",          col:"#7c2d12", floor:"Bât. C · 3e"},
-  mamadou: {nm:"Mamadou",        col:"#9a3412", floor:"Bât. D · 1er"},
-  diallo:  {nm:"Famille Diallo", col:"#166534", floor:"Bât. A · 3e"},
-  syndic:  {nm:"Le Syndic",      col:"#374151", role:"Résidence", floor:"Bât. A · RDC"},
-  leila:   {nm:"Leila",          col:"#be123c", floor:"Bât. B · 4e"},
-  marc:    {nm:"Marc",           col:"#1d4ed8", floor:"Bât. C · 1er"},
-  fatou:   {nm:"Fatou",          col:"#9d174d", floor:"Bât. D · 2e"},
+  nadir:   {nm:"Nadir",          col:"#0f766e", role:"Mairie de Montmagny", floor:"Bât. A"},
+  awa:     {nm:"Awa",            col:"#b45309", floor:"Bât. B"},
+  sacha:   {nm:"Sacha",          col:"#7c2d12", floor:"Bât. C"},
+  mamadou: {nm:"Mamadou",        col:"#9a3412", floor:"Bât. D"},
+  diallo:  {nm:"Famille Diallo", col:"#166534", floor:"Bât. A"},
+  syndic:  {nm:"Le Syndic",      col:"#374151", role:"Résidence", floor:"Bât. A"},
+  leila:   {nm:"Leila",          col:"#be123c", floor:"Bât. B"},
+  marc:    {nm:"Marc",           col:"#1d4ed8", floor:"Bât. C"},
+  fatou:   {nm:"Fatou",          col:"#9d174d", floor:"Bât. D"},
 };
 
 /* media hosted alongside index.html */
@@ -396,7 +396,7 @@ function renderFil(){
         ${av('nadir',44)}
         <div class="post-meta">
           <div class="nm">Nadir <span class="chip mairie">✓ Mairie de Montmagny</span></div>
-          <div class="sub">Bât. A · RDC · il y a 2h</div>
+          <div class="sub">Bât. A · il y a 2h</div>
         </div>
       </div>
       <div class="post-title">Coupe des Nations de Montmagny</div>
@@ -434,7 +434,7 @@ function renderFil(){
       <div class="ic" style="background:var(--leaf-soft)">🎉</div>
       <div class="tx">
         <div class="a">Bienvenue à la Famille Diallo</div>
-        <div class="b">Vient d'emménager · Bât. A, 3e étage. Souhaitez-leur la bienvenue !</div>
+        <div class="b">Vient d'emménager · Bât. A. Souhaitez-leur la bienvenue !</div>
       </div>
     </div>
   </article>
@@ -446,7 +446,7 @@ function renderFil(){
         ${av('awa')}
         <div class="post-meta">
           <div class="nm">Awa</div>
-          <div class="sub">Bât. B · 2e · il y a 1h</div>
+          <div class="sub">Bât. B · il y a 1h</div>
         </div>
         <span class="chip" style="background:var(--terracotta-soft);color:var(--terracotta)">🤝 Coup de main</span>
       </div>
@@ -462,7 +462,7 @@ function renderFil(){
       <div class="ic" style="background:#FBE0D4">🎂</div>
       <div class="tx">
         <div class="a">Aujourd'hui, c'est l'anniversaire de Mamadou</div>
-        <div class="b">Un petit mot lui fera plaisir · Bât. D, 1er étage.</div>
+        <div class="b">Un petit mot lui fera plaisir · Bât. D.</div>
       </div>
     </div>
   </article>
@@ -474,7 +474,7 @@ function renderFil(){
         ${av('sacha')}
         <div class="post-meta">
           <div class="nm">Sacha</div>
-          <div class="sub">Bât. C · 3e · il y a 4h</div>
+          <div class="sub">Bât. C · il y a 4h</div>
         </div>
         <span class="chip" style="background:var(--leaf-soft);color:var(--leaf)">🧺 Sortie</span>
       </div>
@@ -636,7 +636,7 @@ function renderProfil(){
   const el=document.getElementById('page-profil');
   const name=getName();
   const isNadir=/nadir/i.test(name);
-  const floor = isNadir ? "Bât. A · RDC · Mairie de Montmagny" : "Bât. A · 2e étage";
+  const floor = isNadir ? "Bât. A · Mairie de Montmagny" : "Bât. A";
   const since = isNadir ? "Référent quartier" : "Voisin depuis avril 2026";
 
   const myPosts = isNadir ? `
