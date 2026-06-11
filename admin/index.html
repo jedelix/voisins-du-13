@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex,nofollow" />
+<title>Admin · Les Voisins du 13</title>
+<style>
+  :root{
+    --cream:#FAF4E8; --cream-deep:#F1E7D3; --ink:#2E2A24; --ink-soft:#7A7167;
+    --terra:#C15F2E; --terra-soft:#F3DDCB; --coral:#E07A4D; --leaf:#2F6B50; --border:#E6DBC6;
+  }
+  *{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;}
+  body{margin:0;background:var(--cream);color:var(--ink);}
+  h1,h2,h3{font-weight:700;}
+  button{cursor:pointer;font:inherit;}
+  input,select,textarea{font:inherit;}
+  /* Login */
+  #login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+  .login-card{background:#fff;border:1px solid var(--border);border-radius:22px;padding:30px;max-width:380px;width:100%;box-shadow:0 20px 50px -20px rgba(0,0,0,.2);}
+  .badge{width:64px;height:64px;border-radius:18px;background:linear-gradient(140deg,var(--terra),var(--coral));color:#fff;display:grid;place-items:center;font-size:28px;font-weight:700;margin:0 auto 16px;}
+  .login-card h1{text-align:center;font-size:22px;margin:0 0 4px;}
+  .login-card p{text-align:center;color:var(--ink-soft);margin:0 0 22px;font-size:13px;}
+  label{display:block;font-size:12px;font-weight:600;color:var(--ink-soft);margin:12px 0 6px;}
+  .fld{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:12px;background:#fff;outline:none;}
+  .fld:focus{border-color:var(--terra);}
+  .btn{width:100%;padding:13px;border:none;border-radius:12px;background:var(--terra);color:#fff;font-weight:600;margin-top:18px;transition:opacity .2s;}
+  .btn:hover{opacity:.92;}
+  .btn.sec{background:var(--cream-deep);color:var(--ink);}
+  .btn.mini{width:auto;padding:7px 12px;margin:0;font-size:13px;border-radius:9px;}
+  .err{color:#b3261e;font-size:13px;margin-top:12px;text-align:center;min-height:18px;}
+  /* App */
+  #app{display:none;min-height:100vh;}
+  header.top{position:sticky;top:0;z-index:10;background:rgba(250,244,232,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:12px 18px;display:flex;align-items:center;gap:12px;}
+  header.top .b{width:38px;height:38px;border-radius:11px;background:linear-gradient(140deg,var(--terra),var(--coral));color:#fff;display:grid;place-items:center;font-weight:700;}
+  header.top h1{font-size:17px;margin:0;flex:1;}
+  header.top .who{font-size:12px;color:var(--ink-soft);}
+  .wrap{max-width:1100px;margin:0 auto;padding:18px;}
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;}
+  .tab{padding:9px 14px;border-radius:999px;background:#fff;border:1px solid var(--border);color:var(--ink-soft);font-weight:600;font-size:13.5px;}
+  .tab.on{background:var(--terra);color:#fff;border-color:var(--terra);}
+  .toolbar{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+  .toolbar h2{font-size:20px;margin:0;flex:1;}
+  .count{font-size:12px;color:var(--ink-soft);background:var(--cream-deep);padding:4px 10px;border-radius:999px;}
+  table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+  th,td{text-align:left;padding:10px 12px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:top;}
+  th{background:var(--cream-deep);font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);}
+  tr:last-child td{border-bottom:none;}
+  td.actions{white-space:nowrap;text-align:right;}
+  .pill{display:inline-block;padding:2px 8px;border-radius:999px;background:var(--terra-soft);color:var(--terra);font-size:11px;font-weight:700;}
+  .lnk{color:var(--terra);font-weight:600;background:none;border:none;padding:4px 6px;font-size:13px;}
+  .lnk.del{color:#b3261e;}
+  .muted{color:var(--ink-soft);}
+  .empty{padding:40px;text-align:center;color:var(--ink-soft);}
+  /* Modal */
+  #modal{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;padding:18px;z-index:50;}
+  #modal.show{display:flex;}
+  .sheet{background:#fff;border-radius:18px;padding:22px;max-width:480px;width:100%;max-height:90vh;overflow:auto;}
+  .sheet h3{margin:0 0 14px;font-size:18px;}
+  .row2{display:flex;gap:10px;}
+  .row2>div{flex:1;}
+  textarea.fld{min-height:80px;resize:vertical;}
+  .sheet .acts{display:flex;gap:10px;margin-top:18px;}
+  .note{font-size:12px;color:var(--ink-soft);background:var(--cream-deep);padding:10px 12px;border-radius:10px;margin-bottom:14px;}
+  @media(max-width:640px){ th.hide-sm,td.hide-sm{display:none;} }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login">
+  <form class="login-card" id="loginForm">
+    <div class="badge">13</div>
+    <h1>Admin · Les Voisins du 13</h1>
+    <p>Gère le quartier sans passer par Supabase.</p>
+    <label>Email</label>
+    <input class="fld" id="email" type="email" autocomplete="username" placeholder="admin@…" />
+    <label>Mot de passe</label>
+    <input class="fld" id="password" type="password" autocomplete="current-password" placeholder="••••••••" />
+    <button class="btn" type="submit" id="loginBtn">Se connecter</button>
+    <div class="err" id="loginErr"></div>
+  </form>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <header class="top">
+    <div class="b">13</div>
+    <h1>Console admin</h1>
+    <span class="who" id="who"></span>
+    <button class="btn sec mini" id="logout">Déconnexion</button>
+  </header>
+  <div class="wrap">
+    <div class="tabs" id="tabs"></div>
+    <div class="toolbar">
+      <h2 id="secTitle"></h2>
+      <span class="count" id="count"></span>
+      <button class="btn mini" id="addBtn">+ Ajouter</button>
+    </div>
+    <div id="tableWrap"></div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div id="modal">
+  <form class="sheet" id="form">
+    <h3 id="formTitle">Ajouter</h3>
+    <div class="note" id="formNote"></div>
+    <div id="formFields"></div>
+    <div class="acts">
+      <button type="button" class="btn sec" id="cancelBtn">Annuler</button>
+      <button type="submit" class="btn" id="saveBtn">Enregistrer</button>
+    </div>
+  </form>
+</div>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const URL = "https://nzntbpijvpkssynpfnig.supabase.co";
+const ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56bnRicGlqdnBrc3N5bnBmbmlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExODMzNjUsImV4cCI6MjA5Njc1OTM2NX0.hP3OkXmZ856cU1AZyYVSptA-GfiWrRLxHmAT4-tItQ8";
+const sb = createClient(URL, ANON);
+
+// Définition des sections gérables
+const FIELD = (name, label, type='text', opts) => ({name, label, type, opts});
+const SECTIONS = {
+  posts: { label:'Fil', icon:'📣', order:['pinned',false,'created_at',false], publishes:true,
+    cols:['kind','author_name','author_building','title','body','pinned'],
+    fields:[
+      FIELD('kind','Type','select',['post','info','help','sortie','cagnotte','welcome','birthday','thanks','event']),
+      FIELD('author_name','Auteur'), FIELD('author_building','Bâtiment','select',['A','B','C','D','']),
+      FIELD('author_role','Rôle (optionnel)'),
+      FIELD('title','Titre'), FIELD('body','Message','textarea'),
+      FIELD('date_label','Date affichée (optionnel)'),
+      FIELD('pinned','Épinglé','bool'),
+    ] },
+  events: { label:'Agenda', icon:'📅', order:['event_at',true], publishes:true,
+    cols:['emoji','title','subtitle','event_at','author_name'],
+    fields:[ FIELD('emoji','Emoji'), FIELD('title','Titre'), FIELD('subtitle','Sous-titre'),
+      FIELD('event_at','Date & heure','datetime'), FIELD('location','Lieu'), FIELD('author_name','Proposé par') ] },
+  annonces: { label:'Annonces', icon:'🏷️', order:['created_at',false],
+    cols:['tag','title','author_name','author_building'],
+    fields:[ FIELD('tag','Type','select',['donne','prete','vends','cherche']),
+      FIELD('label','Libellé','select',['Donne','Prête','Vends','Cherche']),
+      FIELD('emoji','Emoji'), FIELD('title','Objet'), FIELD('description','Détails','textarea'),
+      FIELD('author_name','Auteur'), FIELD('author_building','Bâtiment','select',['A','B','C','D']) ] },
+  businesses: { label:'Côté business', icon:'💼', order:['created_at',false],
+    cols:['emoji','name','category','owner_name','owner_building'],
+    fields:[ FIELD('emoji','Emoji'), FIELD('name','Nom de l\'activité'), FIELD('category','Catégorie'),
+      FIELD('description','Description','textarea'), FIELD('owner_name','Voisin'),
+      FIELD('owner_building','Bâtiment','select',['A','B','C','D']), FIELD('contact','Contact','select',['WhatsApp','Téléphone']) ] },
+  profiles: { label:'Voisins', icon:'👥', order:['created_at',true], noAdd:true,
+    cols:['first_name','building','role','is_admin'],
+    fields:[ FIELD('first_name','Prénom'), FIELD('building','Bâtiment','select',['A','B','C','D']),
+      FIELD('role','Rôle'), FIELD('is_admin','Admin','bool') ] },
+  messages: { label:'Messages', icon:'💬', order:['created_at',false], noAdd:true, readOnly:true,
+    cols:['sender_name','body'],
+    fields:[] },
+};
+
+let current = 'posts';
+let editing = null; // row id en cours d'édition, ou null
+
+const $ = (id)=>document.getElementById(id);
+
+async function init(){
+  const { data:{ session } } = await sb.auth.getSession();
+  if(session && await checkAdmin()){ showApp(session); }
+}
+async function checkAdmin(){
+  const { data } = await sb.from('profiles').select('first_name,is_admin').eq('id',(await sb.auth.getUser()).data.user.id).maybeSingle();
+  return data?.is_admin === true ? data : null;
+}
+
+$('loginForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  $('loginErr').textContent=''; $('loginBtn').textContent='Connexion…';
+  const { error } = await sb.auth.signInWithPassword({ email:$('email').value.trim(), password:$('password').value });
+  $('loginBtn').textContent='Se connecter';
+  if(error){ $('loginErr').textContent='Identifiants incorrects.'; return; }
+  const adm = await checkAdmin();
+  if(!adm){ $('loginErr').textContent="Ce compte n'est pas administrateur."; await sb.auth.signOut(); return; }
+  const { data:{ session } } = await sb.auth.getSession();
+  showApp(session, adm);
+});
+
+$('logout').addEventListener('click', async ()=>{ await sb.auth.signOut(); location.reload(); });
+
+async function showApp(session, adm){
+  $('login').style.display='none'; $('app').style.display='block';
+  $('who').textContent = (adm?.first_name||'Admin');
+  renderTabs();
+  selectSection('posts');
+}
+
+function renderTabs(){
+  $('tabs').innerHTML = Object.entries(SECTIONS).map(([k,s])=>
+    `<button class="tab" data-k="${k}">${s.icon} ${s.label}</button>`).join('');
+  $('tabs').querySelectorAll('.tab').forEach(b=> b.onclick=()=>selectSection(b.dataset.k));
+}
+
+function selectSection(k){
+  current=k;
+  $('tabs').querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.k===k));
+  const s=SECTIONS[k];
+  $('secTitle').textContent = s.label;
+  $('addBtn').style.display = s.noAdd ? 'none':'inline-block';
+  loadTable();
+}
+
+async function loadTable(){
+  const s=SECTIONS[current];
+  $('tableWrap').innerHTML='<div class="empty">Chargement…</div>';
+  let q = sb.from(current).select('*');
+  // tri
+  for(let i=0;i<s.order.length;i+=2){ q=q.order(s.order[i],{ascending:s.order[i+1]}); }
+  q=q.limit(200);
+  const { data, error } = await q;
+  if(error){ $('tableWrap').innerHTML=`<div class="empty">Erreur : ${error.message}</div>`; return; }
+  $('count').textContent = `${data.length} élément${data.length>1?'s':''}`;
+  if(!data.length){ $('tableWrap').innerHTML='<div class="empty">Rien ici pour l\'instant.</div>'; return; }
+  const cols=s.cols;
+  const head = cols.map((c,i)=>`<th class="${i>2?'hide-sm':''}">${c}</th>`).join('') + (s.readOnly?'':'<th></th>');
+  const rows = data.map(r=>{
+    const tds = cols.map((c,i)=>`<td class="${i>2?'hide-sm':''}">${fmt(r[c])}</td>`).join('');
+    const act = s.readOnly?'':`<td class="actions">
+        <button class="lnk" data-edit="${r.id}">Modifier</button>
+        <button class="lnk del" data-del="${r.id}">Suppr.</button></td>`;
+    return `<tr>${tds}${act}</tr>`;
+  }).join('');
+  $('tableWrap').innerHTML=`<table><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table>`;
+  $('tableWrap').querySelectorAll('[data-edit]').forEach(b=> b.onclick=()=>openForm(data.find(x=>x.id===b.dataset.edit)));
+  $('tableWrap').querySelectorAll('[data-del]').forEach(b=> b.onclick=()=>del(b.dataset.del));
+}
+
+function fmt(v){
+  if(v===null||v===undefined||v==='') return '<span class="muted">—</span>';
+  if(v===true) return '<span class="pill">oui</span>';
+  if(v===false) return '<span class="muted">non</span>';
+  let s=String(v);
+  if(/^\d{4}-\d\d-\d\dT/.test(s)){ try{ s=new Date(s).toLocaleString('fr-FR',{dateStyle:'medium',timeStyle:'short'}); }catch(e){} }
+  if(s.length>70) s=s.slice(0,70)+'…';
+  return s.replace(/</g,'&lt;');
+}
+
+$('addBtn').onclick=()=>openForm(null);
+$('cancelBtn').onclick=()=>$('modal').classList.remove('show');
+
+function openForm(row){
+  const s=SECTIONS[current];
+  editing = row ? row.id : null;
+  $('formTitle').textContent = (row?'Modifier':'Ajouter')+' · '+s.label;
+  $('formNote').style.display = s.publishes ? 'block':'none';
+  $('formNote').textContent = s.publishes ? '🔔 Publier ici envoie une notification à tous les voisins.' : '';
+  $('formFields').innerHTML = s.fields.map(f=>{
+    const v = row? (row[f.name]??'') : '';
+    if(f.type==='bool') return `<label>${f.label}</label><select class="fld" name="${f.name}"><option value="false"${!v?' selected':''}>Non</option><option value="true"${v===true?' selected':''}>Oui</option></select>`;
+    if(f.type==='select') return `<label>${f.label}</label><select class="fld" name="${f.name}">${f.opts.map(o=>`<option${String(v)===o?' selected':''}>${o}</option>`).join('')}</select>`;
+    if(f.type==='textarea') return `<label>${f.label}</label><textarea class="fld" name="${f.name}">${String(v).replace(/</g,'&lt;')}</textarea>`;
+    if(f.type==='datetime'){ let dv=''; if(v){ try{ dv=new Date(v).toISOString().slice(0,16);}catch(e){} } return `<label>${f.label}</label><input class="fld" type="datetime-local" name="${f.name}" value="${dv}">`; }
+    return `<label>${f.label}</label><input class="fld" name="${f.name}" value="${String(v).replace(/"/g,'&quot;')}">`;
+  }).join('');
+  $('modal').classList.add('show');
+}
+
+$('form').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const s=SECTIONS[current];
+  const obj={};
+  s.fields.forEach(f=>{
+    let val = $('form').elements[f.name]?.value;
+    if(f.type==='bool') val = (val==='true');
+    else if(f.type==='datetime') val = val ? new Date(val).toISOString() : null;
+    else if(val==='') val = null;
+    obj[f.name]=val;
+  });
+  $('saveBtn').textContent='…';
+  let res;
+  if(editing) res = await sb.from(current).update(obj).eq('id',editing);
+  else res = await sb.from(current).insert(obj);
+  $('saveBtn').textContent='Enregistrer';
+  if(res.error){ alert('Erreur : '+res.error.message); return; }
+  $('modal').classList.remove('show');
+  loadTable();
+});
+
+async function del(id){
+  if(!confirm('Supprimer cet élément ? Action définitive.')) return;
+  const { error } = await sb.from(current).delete().eq('id',id);
+  if(error){ alert('Erreur : '+error.message); return; }
+  loadTable();
+}
+
+init();
+</script>
+</body>
+</html>
