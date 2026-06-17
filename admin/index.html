@@ -125,7 +125,7 @@ const sb = createClient(URL, ANON);
 const FIELD = (name, label, type='text', opts) => ({name, label, type, opts});
 const SECTIONS = {
   posts: { label:'Fil', icon:'📣', order:['pinned',false,'created_at',false], publishes:true,
-    cols:['kind','author_name','author_building','title','body','pinned'],
+    cols:['status','kind','author_name','title','body'],
     fields:[
       FIELD('kind','Type','select',['post','info','help','sortie','cagnotte','welcome','birthday','thanks','event']),
       FIELD('author_name','Auteur'), FIELD('author_building','Bâtiment','select',['A','B','C','D','']),
@@ -135,17 +135,17 @@ const SECTIONS = {
       FIELD('pinned','Épinglé','bool'),
     ] },
   events: { label:'Agenda', icon:'📅', order:['event_at',true], publishes:true,
-    cols:['emoji','title','subtitle','event_at','author_name'],
+    cols:['status','emoji','title','event_at','author_name'],
     fields:[ FIELD('emoji','Emoji'), FIELD('title','Titre'), FIELD('subtitle','Sous-titre'),
       FIELD('event_at','Date & heure','datetime'), FIELD('location','Lieu'), FIELD('author_name','Proposé par') ] },
   annonces: { label:'Annonces', icon:'🏷️', order:['created_at',false],
-    cols:['tag','title','author_name','author_building'],
+    cols:['status','tag','title','author_name'],
     fields:[ FIELD('tag','Type','select',['donne','prete','vends','cherche']),
       FIELD('label','Libellé','select',['Donne','Prête','Vends','Cherche']),
       FIELD('emoji','Emoji'), FIELD('title','Objet'), FIELD('description','Détails','textarea'),
       FIELD('author_name','Auteur'), FIELD('author_building','Bâtiment','select',['A','B','C','D']) ] },
   businesses: { label:'Côté business', icon:'💼', order:['created_at',false],
-    cols:['emoji','name','category','owner_name','owner_building'],
+    cols:['status','emoji','name','owner_name'],
     fields:[ FIELD('emoji','Emoji'), FIELD('name','Nom de l\'activité'), FIELD('category','Catégorie'),
       FIELD('description','Description','textarea'), FIELD('owner_name','Voisin'),
       FIELD('owner_building','Bâtiment','select',['A','B','C','D']), FIELD('contact','Contact','select',['WhatsApp','Téléphone']) ] },
@@ -155,6 +155,9 @@ const SECTIONS = {
       FIELD('role','Rôle'), FIELD('is_admin','Admin','bool') ] },
   messages: { label:'Messages', icon:'💬', order:['created_at',false], noAdd:true, readOnly:true,
     cols:['sender_name','body'],
+    fields:[] },
+  access_codes: { label:'Codes d\'accès', icon:'🔑', order:['created_at',false], pk:'code', codes:true, noEdit:true,
+    cols:['code','note','used_at'],
     fields:[] },
 };
 
@@ -205,6 +208,7 @@ function selectSection(k){
   const s=SECTIONS[k];
   $('secTitle').textContent = s.label;
   $('addBtn').style.display = s.noAdd ? 'none':'inline-block';
+  $('addBtn').textContent = s.codes ? '🔑 Générer des codes' : '+ Ajouter';
   loadTable();
 }
 
@@ -221,30 +225,57 @@ async function loadTable(){
   if(!data.length){ $('tableWrap').innerHTML='<div class="empty">Rien ici pour l\'instant.</div>'; return; }
   const cols=s.cols;
   const head = cols.map((c,i)=>`<th class="${i>2?'hide-sm':''}">${c}</th>`).join('') + (s.readOnly?'':'<th></th>');
+  const pk = s.pk || 'id';
   const rows = data.map(r=>{
+    const id = r[pk];
     const tds = cols.map((c,i)=>`<td class="${i>2?'hide-sm':''}">${fmt(r[c])}</td>`).join('');
-    const act = s.readOnly?'':`<td class="actions">
-        <button class="lnk" data-edit="${r.id}">Modifier</button>
-        <button class="lnk del" data-del="${r.id}">Suppr.</button></td>`;
+    let actions='';
+    if(!s.readOnly){
+      if(r.status==='pending') actions+=`<button class="lnk" style="color:var(--leaf)" data-appr="${id}">✓ Approuver</button> `;
+      if(!s.noEdit) actions+=`<button class="lnk" data-edit="${id}">Modifier</button> `;
+      actions+=`<button class="lnk del" data-del="${id}">Suppr.</button>`;
+    }
+    const act = s.readOnly?'':`<td class="actions">${actions}</td>`;
     return `<tr>${tds}${act}</tr>`;
   }).join('');
   $('tableWrap').innerHTML=`<table><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table>`;
-  $('tableWrap').querySelectorAll('[data-edit]').forEach(b=> b.onclick=()=>openForm(data.find(x=>x.id===b.dataset.edit)));
+  $('tableWrap').querySelectorAll('[data-edit]').forEach(b=> b.onclick=()=>openForm(data.find(x=>String(x[pk])===b.dataset.edit)));
   $('tableWrap').querySelectorAll('[data-del]').forEach(b=> b.onclick=()=>del(b.dataset.del));
+  $('tableWrap').querySelectorAll('[data-appr]').forEach(b=> b.onclick=()=>approve(b.dataset.appr));
 }
 
 function fmt(v){
   if(v===null||v===undefined||v==='') return '<span class="muted">—</span>';
   if(v===true) return '<span class="pill">oui</span>';
   if(v===false) return '<span class="muted">non</span>';
+  if(v==='pending') return '<span class="pill" style="background:#FBE7CF;color:#9A3412">en attente</span>';
+  if(v==='approved') return '<span class="pill" style="background:#DCEBE0;color:#2F6B50">publié</span>';
   let s=String(v);
   if(/^\d{4}-\d\d-\d\dT/.test(s)){ try{ s=new Date(s).toLocaleString('fr-FR',{dateStyle:'medium',timeStyle:'short'}); }catch(e){} }
   if(s.length>70) s=s.slice(0,70)+'…';
   return s.replace(/</g,'&lt;');
 }
 
-$('addBtn').onclick=()=>openForm(null);
+$('addBtn').onclick=()=>{ if(SECTIONS[current].codes) genCodes(); else openForm(null); };
 $('cancelBtn').onclick=()=>$('modal').classList.remove('show');
+
+async function approve(id){
+  const pk = SECTIONS[current].pk || 'id';
+  const { error } = await sb.from(current).update({status:'approved'}).eq(pk,id);
+  if(error){ alert('Erreur : '+error.message); return; }
+  loadTable();
+}
+
+async function genCodes(){
+  const n = parseInt(prompt('Combien de codes d\'accès générer ?','10')||'0',10);
+  if(!n || n<1) return;
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const rows=[];
+  for(let k=0;k<n;k++){ let s=''; for(let j=0;j<4;j++) s+=chars[Math.floor(Math.random()*chars.length)]; rows.push({code:'LE13-'+s}); }
+  const { error } = await sb.from('access_codes').insert(rows);
+  if(error){ alert('Erreur : '+error.message); return; }
+  loadTable();
+}
 
 function openForm(row){
   const s=SECTIONS[current];
@@ -286,7 +317,7 @@ $('form').addEventListener('submit', async (e)=>{
 
 async function del(id){
   if(!confirm('Supprimer cet élément ? Action définitive.')) return;
-  const { error } = await sb.from(current).delete().eq('id',id);
+  const { error } = await sb.from(current).delete().eq(SECTIONS[current].pk||'id',id);
   if(error){ alert('Erreur : '+error.message); return; }
   loadTable();
 }
