@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex,nofollow" />
-<title>Admin · Les Voisins du 13</title>
+<title>Admin · L'Amicale des Carrières</title>
 <style>
   :root{
     --cream:#FAF4E8; --cream-deep:#F1E7D3; --ink:#2E2A24; --ink-soft:#7A7167;
@@ -70,8 +70,8 @@
 <!-- LOGIN -->
 <div id="login">
   <form class="login-card" id="loginForm">
-    <div class="badge">13</div>
-    <h1>Admin · Les Voisins du 13</h1>
+    <div class="badge">AC</div>
+    <h1>Admin · L'Amicale des Carrières</h1>
     <p>Gère le quartier sans passer par Supabase.</p>
     <label>Email</label>
     <input class="fld" id="email" type="email" autocomplete="username" placeholder="admin@…" />
@@ -85,7 +85,7 @@
 <!-- APP -->
 <div id="app">
   <header class="top">
-    <div class="b">13</div>
+    <div class="b">AC</div>
     <h1>Console admin</h1>
     <span class="who" id="who"></span>
     <button class="btn sec mini" id="logout">Déconnexion</button>
@@ -95,6 +95,7 @@
     <div class="toolbar">
       <h2 id="secTitle"></h2>
       <span class="count" id="count"></span>
+      <button class="btn sec mini" id="addBtn2" style="display:none">+ Réservé (1-10)</button>
       <button class="btn mini" id="addBtn">+ Ajouter</button>
     </div>
     <div id="tableWrap"></div>
@@ -209,6 +210,7 @@ function selectSection(k){
   $('secTitle').textContent = s.label;
   $('addBtn').style.display = s.noAdd ? 'none':'inline-block';
   $('addBtn').textContent = s.codes ? '🔑 Générer des codes' : '+ Ajouter';
+  $('addBtn2').style.display = s.codes ? 'inline-block':'none';
   loadTable();
 }
 
@@ -257,6 +259,7 @@ function fmt(v){
 }
 
 $('addBtn').onclick=()=>{ if(SECTIONS[current].codes) genCodes(); else openForm(null); };
+$('addBtn2').onclick=()=>genReserved();
 $('cancelBtn').onclick=()=>$('modal').classList.remove('show');
 
 async function approve(id){
@@ -266,13 +269,32 @@ async function approve(id){
   loadTable();
 }
 
+function curPeriod(){ const d=new Date(); return ('0'+(d.getMonth()+1)).slice(-2)+(''+d.getFullYear()).slice(-2); }
+
 async function genCodes(){
-  const n = parseInt(prompt('Combien de codes d\'accès générer ?','10')||'0',10);
+  const n = parseInt(prompt('Combien de codes générer ? (aléatoires, 011 à 999)','10')||'0',10);
   if(!n || n<1) return;
-  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  const rows=[];
-  for(let k=0;k<n;k++){ let s=''; for(let j=0;j<4;j++) s+=chars[Math.floor(Math.random()*chars.length)]; rows.push({code:'LE13-'+s}); }
+  const period = curPeriod();
+  const { data: ex } = await sb.from('access_codes').select('suffix');
+  const taken = new Set((ex||[]).map(r=>r.suffix).filter(Boolean));
+  const rows=[]; let guard=0;
+  while(rows.length<n && guard<8000){ guard++;
+    const num = 11 + Math.floor(Math.random()*989); // 11..999, jamais 001-010
+    const suf = ('00'+num).slice(-3);
+    if(taken.has(suf)) continue; taken.add(suf);
+    rows.push({code:'RDC-'+period+'-'+suf, suffix:suf, period});
+  }
   const { error } = await sb.from('access_codes').insert(rows);
+  if(error){ alert('Erreur : '+error.message); return; }
+  alert(n+' codes générés (période '+period+'). Le voisin tape seulement les 3 chiffres.');
+  loadTable();
+}
+
+async function genReserved(){
+  const num = parseInt(prompt('Numéro réservé à attribuer (1 à 10) ?','1')||'0',10);
+  if(!num || num<1 || num>10) return;
+  const period = curPeriod(); const suf=('00'+num).slice(-3);
+  const { error } = await sb.from('access_codes').insert([{code:'RDC-'+period+'-'+suf, suffix:suf, period, note:'réservé'}]);
   if(error){ alert('Erreur : '+error.message); return; }
   loadTable();
 }
