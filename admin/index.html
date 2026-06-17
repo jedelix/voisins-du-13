@@ -160,6 +160,9 @@ const SECTIONS = {
   access_codes: { label:'Codes d\'accès', icon:'🔑', order:['created_at',false], pk:'code', codes:true, noEdit:true,
     cols:['code','note','used_at'],
     fields:[] },
+  app_version: { label:'Version app', icon:'⬆️', order:['id',true], pk:'id', noAdd:true,
+    cols:['latest_build','apk_url','notes'],
+    fields:[ FIELD('latest_build','Build officiel (nombre)'), FIELD('apk_url','Lien APK'), FIELD('notes','Note de mise à jour','textarea') ] },
 };
 
 let current = 'posts';
