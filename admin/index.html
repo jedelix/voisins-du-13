@@ -52,6 +52,11 @@
   .lnk.del{color:#b3261e;}
   .muted{color:var(--ink-soft);}
   .empty{padding:40px;text-align:center;color:var(--ink-soft);}
+  .reqcard{background:#fff;border:1px solid var(--border);border-radius:16px;padding:14px 16px;margin-bottom:12px;}
+  .reqhead{font-size:15px;display:flex;align-items:center;gap:8px;}
+  .reqmeta{font-size:13px;color:var(--ink-soft);margin-top:6px;}
+  .reqcode{font-size:14px;margin-top:8px;background:var(--cream-deep);padding:8px 10px;border-radius:10px;}
+  .reqacts{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;margin-top:10px;}
   /* Modal */
   #modal{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;padding:18px;z-index:50;}
   #modal.show{display:flex;}
@@ -125,6 +130,7 @@ const sb = createClient(URL, ANON);
 // Définition des sections gérables
 const FIELD = (name, label, type='text', opts) => ({name, label, type, opts});
 const SECTIONS = {
+  join_requests: { label:'Demandes', icon:'📨', order:['created_at',false], pk:'id', custom:'requests', noAdd:true, cols:[], fields:[] },
   posts: { label:'Fil', icon:'📣', order:['pinned',false,'created_at',false], publishes:true,
     cols:['status','kind','author_name','title','body'],
     fields:[
@@ -197,7 +203,7 @@ async function showApp(session, adm){
   $('login').style.display='none'; $('app').style.display='block';
   $('who').textContent = (adm?.first_name||'Admin');
   renderTabs();
-  selectSection('posts');
+  selectSection('join_requests');
 }
 
 function renderTabs(){
@@ -219,6 +225,7 @@ function selectSection(k){
 
 async function loadTable(){
   const s=SECTIONS[current];
+  if(s.custom==='requests'){ return renderRequests(); }
   $('tableWrap').innerHTML='<div class="empty">Chargement…</div>';
   let q = sb.from(current).select('*');
   // tri
@@ -345,6 +352,64 @@ async function del(id){
   const { error } = await sb.from(current).delete().eq(SECTIONS[current].pk||'id',id);
   if(error){ alert('Erreur : '+error.message); return; }
   loadTable();
+}
+
+// ---- Demandes d'inscription ----
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function statusPill(st){
+  if(st==='code_ready') return '<span class="pill" style="background:#FBE7CF;color:#9A3412">code généré</span>';
+  if(st==='done') return '<span class="pill" style="background:#DCEBE0;color:#2F6B50">inscrit</span>';
+  return '<span class="pill">nouvelle</span>';
+}
+function waMessage(req){
+  const num=(req.code||'').split('-').pop();
+  return `Bonjour ${req.first_name||''} ! Bienvenue à l'Amicale des Carrières 🌳\n\nVoici ton code d'accès à l'application : ${num}\n\nOuvre l'appli, entre ce numéro, et tu fais officiellement partie du quartier. À très vite entre voisins !`;
+}
+function waLink(req){
+  let phone=(req.phone||'').replace(/\D/g,'');
+  if(phone.startsWith('0')) phone='33'+phone.slice(1);
+  return 'https://wa.me/'+phone+'?text='+encodeURIComponent(waMessage(req));
+}
+async function copyMsg(req){
+  try{ await navigator.clipboard.writeText(waMessage(req)); alert('Message copié — colle-le dans WhatsApp.'); }
+  catch(e){ prompt('Copie ce message :', waMessage(req)); }
+}
+async function genReqCode(req){
+  const period=curPeriod();
+  const { data: ex } = await sb.from('access_codes').select('suffix');
+  const taken=new Set((ex||[]).map(r=>r.suffix).filter(Boolean));
+  let suf,g=0; do{ suf=('00'+(11+Math.floor(Math.random()*989))).slice(-3); g++; }while(taken.has(suf)&&g<8000);
+  const code='RDC-'+period+'-'+suf;
+  if(req.code){ await sb.from('access_codes').delete().eq('code',req.code); }
+  const r1 = await sb.from('access_codes').insert([{code,suffix:suf,period,note:'demande '+(req.first_name||'')}]);
+  if(r1.error){ alert('Erreur : '+r1.error.message); return; }
+  const r2 = await sb.from('join_requests').update({code,status:'code_ready'}).eq('id',req.id);
+  if(r2.error){ alert('Erreur : '+r2.error.message); return; }
+  loadTable();
+}
+async function renderRequests(){
+  $('tableWrap').innerHTML='<div class="empty">Chargement…</div>';
+  const { data, error } = await sb.from('join_requests').select('*').order('created_at',{ascending:false}).limit(300);
+  if(error){ $('tableWrap').innerHTML=`<div class="empty">Erreur : ${error.message}</div>`; return; }
+  $('count').textContent=`${data.length} demande${data.length>1?'s':''}`;
+  if(!data.length){ $('tableWrap').innerHTML='<div class="empty">Aucune demande pour l\'instant.</div>'; return; }
+  $('tableWrap').innerHTML=data.map(r=>{
+    const num=(r.code||'').split('-').pop();
+    return `<div class="reqcard">
+      <div class="reqhead">${esc(r.first_name)} ${esc(r.last_name)} ${statusPill(r.status)}</div>
+      <div class="reqmeta">🏢 Bât. ${esc(r.building||'?')}${r.apartment?(' · '+esc(r.apartment)):''} &nbsp;·&nbsp; 📞 ${esc(r.phone||'—')} &nbsp;·&nbsp; ✉️ ${esc(r.email||'—')}</div>
+      ${r.code?`<div class="reqcode">Code : <b>${esc(r.code)}</b> &nbsp;→&nbsp; le voisin tape <b>${esc(num)}</b></div>`:''}
+      <div class="reqacts">
+        <button class="lnk" data-gen="${r.id}">${r.code?'↻ Régénérer':'🔑 Générer le code'}</button>
+        ${r.code?`<a class="lnk" style="color:#2F6B50" href="${waLink(r)}" target="_blank" rel="noopener">📲 Envoyer sur WhatsApp</a>`:''}
+        ${r.code?`<button class="lnk" data-copy="${r.id}">📋 Copier le message</button>`:''}
+        <button class="lnk del" data-del="${r.id}">Suppr.</button>
+      </div>
+    </div>`;
+  }).join('');
+  $('tableWrap').querySelectorAll('[data-gen]').forEach(b=>b.onclick=()=>genReqCode(data.find(x=>x.id===b.dataset.gen)));
+  $('tableWrap').querySelectorAll('[data-copy]').forEach(b=>b.onclick=()=>copyMsg(data.find(x=>x.id===b.dataset.copy)));
+  $('tableWrap').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>del(b.dataset.del));
 }
 
 init();
